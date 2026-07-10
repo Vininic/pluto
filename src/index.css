@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Pluto design system — vault green ink + gold accent on warm parchment.
+   Sibling of Chronos (midnight + bronze) and Kairos (twilight + rose-gold):
+   same paper, same cards, same type — but where the others measure time and
+   motion, Pluto guards what's stored. Vault green for the ledger's depth,
+   gold for the coin that moves through it. */
+
+@layer base {
+  :root {
+    /* Surfaces — the shared suite parchment */
+    --background: 39 33% 95%;          /* #F7F4EE parchment */
+    --foreground: 152 30% 13%;         /* deep vault ink */
+
+    --surface-raised: 38 40% 97%;
+    --surface-veil: 39 22% 88%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 152 30% 13%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 152 30% 13%;
+
+    /* Brand */
+    --primary: 152 37% 15%;            /* vault green #183427 */
+    --primary-foreground: 39 33% 95%;
+    --primary-deep: 150 42% 9%;        /* near-black green #0E2218 */
+    --primary-glow: 152 30% 27%;
+
+    --secondary: 42 54% 50%;           /* gold #C49A3A */
+    --secondary-foreground: 150 48% 7%;
+    --secondary-soft: 41 71% 66%;      /* soft gold #E6C06C */
+
+    --muted: 39 22% 90%;
+    --muted-foreground: 152 14% 32%;
+
+    --accent: 41 71% 66%;
+    --accent-foreground: 150 48% 7%;
+
+    --neutral-veil: 39 22% 82%;
+
+    --destructive: 8 62% 44%;
+    --destructive-foreground: 39 33% 97%;
+
+    --border: 39 18% 84%;
+    --input: 39 18% 84%;
+    --ring: 42 54% 50%;
+
+    --radius: 0.625rem;
+
+    /* Sidebar — strongly vault */
+    --sidebar-background: 150 46% 7%;
+    --sidebar-foreground: 40 20% 86%;
+    --sidebar-primary: 42 54% 50%;
+    --sidebar-primary-foreground: 150 46% 7%;
+    --sidebar-accent: 152 36% 13%;
+    --sidebar-accent-foreground: 39 33% 95%;
+    --sidebar-border: 152 30% 16%;
+    --sidebar-ring: 42 54% 50%;
+
+    /* Gradients */
+    --gradient-vault: linear-gradient(160deg, hsl(150 46% 7%) 0%, hsl(150 40% 12%) 60%, hsl(152 34% 18%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(41 71% 66%) 0%, hsl(42 54% 50%) 100%);
+    --gradient-parchment: radial-gradient(1200px 600px at 80% -10%, hsl(41 71% 66% / 0.16), transparent 60%),
+                          radial-gradient(900px 500px at -10% 110%, hsl(152 37% 15% / 0.10), transparent 60%),
+                          linear-gradient(180deg, hsl(39 35% 96%), hsl(39 33% 93%));
+    --gradient-veil: linear-gradient(180deg, hsl(39 33% 95% / 0), hsl(39 33% 95% / 0.9));
+
+    /* Shadows */
+    --shadow-soft: 0 1px 2px hsl(150 46% 8% / 0.04), 0 8px 24px -12px hsl(150 46% 8% / 0.12);
+    --shadow-elevated: 0 2px 4px hsl(150 46% 8% / 0.06), 0 24px 48px -20px hsl(150 46% 8% / 0.22);
+    --shadow-gold: 0 10px 30px -12px hsl(42 54% 50% / 0.55);
+
+    /* Motion */
+    --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  Dark theme — "Vault Atelier"                                       */
+  /*  Same palette logic as Chronos/Kairos, inverted: deep green-black    */
+  /*  surfaces with gold taking the lead as the accent.                   */
+  /* ------------------------------------------------------------------ */
+  .dark {
+    --background: 150 34% 5%;
+    --foreground: 40 25% 90%;
+
+    --surface-raised: 150 30% 8%;
+    --surface-veil:   150 26% 11%;
+
+    --card: 150 30% 7%;
+    --card-foreground: 40 25% 90%;
+
+    --popover: 150 30% 7%;
+    --popover-foreground: 40 25% 90%;
+
+    --primary: 42 60% 58%;             /* gold becomes the lead in dark */
+    --primary-foreground: 150 48% 6%;
+    --primary-deep: 42 48% 40%;
+    --primary-glow: 41 65% 66%;
+
+    --secondary: 42 60% 58%;
+    --secondary-foreground: 150 48% 6%;
+    --secondary-soft: 41 65% 70%;
+
+    --muted: 150 20% 15%;
+    --muted-foreground: 40 18% 68%;
+
+    --accent: 42 60% 58%;
+    --accent-foreground: 150 48% 6%;
+
+    --neutral-veil: 150 18% 19%;
+
+    --destructive: 8 70% 55%;
+    --destructive-foreground: 39 30% 96%;
+
+    --border: 150 24% 14%;
+    --input: 150 24% 14%;
+    --ring: 42 60% 58%;
+
+    --sidebar-background: 150 55% 4%;
+    --sidebar-foreground: 40 22% 82%;
+    --sidebar-primary: 42 60% 58%;
+    --sidebar-primary-foreground: 150 48% 6%;
+    --sidebar-accent: 150 32% 9%;
+    --sidebar-accent-foreground: 40 30% 95%;
+    --sidebar-border: 150 28% 13%;
+    --sidebar-ring: 42 60% 58%;
+
+    --gradient-vault: linear-gradient(160deg, hsl(150 55% 4%) 0%, hsl(150 46% 9%) 60%, hsl(152 38% 14%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(41 65% 70%) 0%, hsl(42 60% 50%) 100%);
+    --gradient-parchment: radial-gradient(1200px 600px at 80% -10%, hsl(42 60% 58% / 0.10), transparent 60%),
+                          radial-gradient(900px 500px at -10% 110%, hsl(152 40% 30% / 0.18), transparent 60%),
+                          linear-gradient(180deg, hsl(150 34% 5%), hsl(150 30% 7%));
+    --gradient-veil: linear-gradient(180deg, hsl(150 34% 5% / 0), hsl(150 34% 5% / 0.9));
+
+    --shadow-soft: 0 1px 2px hsl(0 0% 0% / 0.4), 0 8px 24px -12px hsl(0 0% 0% / 0.55);
+    --shadow-elevated: 0 2px 4px hsl(0 0% 0% / 0.45), 0 24px 48px -20px hsl(0 0% 0% / 0.7);
+    --shadow-gold: 0 10px 30px -12px hsl(42 60% 50% / 0.45);
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  html { height: 100%; }
+  body { min-height: 100%; }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "ss01","cv11";
+  }
+  .font-display { font-family: 'Fraunces', ui-serif, Georgia, serif; font-optical-sizing: auto; letter-spacing: -0.02em; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .pluto-surface { background: var(--gradient-parchment); }
+  .pluto-card {
+    @apply bg-card rounded-xl border;
+    box-shadow: var(--shadow-soft);
+  }
+  .pluto-card-elevated {
+    @apply bg-card rounded-xl border;
+    box-shadow: var(--shadow-elevated);
+  }
+  .vault-rule {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(var(--secondary) / 0.6), transparent);
+  }
+  .hairline { border-color: hsl(var(--border)); }
+  .num { font-variant-numeric: tabular-nums; }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .bg-vault { background: var(--gradient-vault); }
+  .bg-gold { background: var(--gradient-gold); }
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-elevated { box-shadow: var(--shadow-elevated); }
+  .shadow-gold { box-shadow: var(--shadow-gold); }
+  .ring-gold { box-shadow: 0 0 0 1px hsl(var(--secondary) / 0.4); }
+}
