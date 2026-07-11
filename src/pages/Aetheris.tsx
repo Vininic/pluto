@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  AlertTriangle, ArrowUp, CheckCircle2, ChevronDown, ClipboardList, FileText, Inbox, Loader2,
-  MessageSquare, Newspaper, Paperclip, PanelRightClose, PanelRightOpen, PiggyBank, Plus, Receipt,
-  RotateCcw, ScanLine, Settings2, SlidersHorizontal, Sparkles, Target, TrendingDown, Trash2,
-  TrendingUp, Wallet as WalletIcon, X,
+  AlertTriangle, ArrowUp, CheckCircle2, ChevronDown, ClipboardList, FileText, History as HistoryIcon,
+  Inbox, Loader2, MessageSquare, Newspaper, Paperclip, PanelRightClose, PanelRightOpen, PiggyBank,
+  Plus, Receipt, RotateCcw, ScanLine, Settings2, SlidersHorizontal, Sparkles, Target, TrendingDown,
+  Trash2, TrendingUp, Wallet as WalletIcon, X,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
@@ -33,7 +33,7 @@ import { LOCALE_LABELS } from "@/lib/i18n/dictionaries";
 import { useI18n, useMoneyFormat, useT } from "@/lib/i18n/I18nProvider";
 import { cn } from "@/lib/utils";
 
-type TabView = "overview" | "digest";
+type TabView = "overview" | "history" | "digest";
 
 function initSessionState(): { sessions: ChatSession[]; activeId: string } {
   const stored = loadSessions();
@@ -57,7 +57,7 @@ export default function Aetheris() {
   const [showSidebar, setShowSidebar] = useState(true);
   const [tab, setTab] = useState<TabView>("overview");
   const [importOpen, setImportOpen] = useState(false);
-  const [, setHistory] = useState<HistoryEntry[]>(loadHistory);
+  const [history, setHistory] = useState<HistoryEntry[]>(loadHistory);
   const [digest, setDigestState] = useState<Digest | null>(() => getDigest());
   const [digestGenerating, setDigestGenerating] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -510,6 +510,7 @@ export default function Aetheris() {
           <div className="mb-3 flex gap-1">
             {([
               { key: "overview" as const, label: L.tabOverview, icon: ClipboardList },
+              { key: "history" as const, label: L.tabHistory, icon: HistoryIcon },
               { key: "digest" as const, label: L.tabDigest, icon: Newspaper },
             ]).map((tabDef) => (
               <button
@@ -583,6 +584,32 @@ export default function Aetheris() {
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {tab === "history" && (
+            <div className="space-y-2">
+              {history.length === 0 ? (
+                <p className="py-6 text-center text-[11px] text-muted-foreground/50">{L.historyEmpty}</p>
+              ) : (
+                history.map((h) => (
+                  <div key={h.id} className="pluto-card p-3">
+                    <div className="mb-1.5 flex items-center justify-between">
+                      <span className="num text-[9px] text-muted-foreground/50">
+                        {new Intl.DateTimeFormat(bcp47, { dateStyle: "short", timeStyle: "short" }).format(new Date(h.timestamp))}
+                      </span>
+                      {h.undone ? (
+                        <span className="text-[9px] uppercase tracking-wider text-muted-foreground/40">{L.historyUndone}</span>
+                      ) : (
+                        <button onClick={() => undoEntry(h)} className="text-[10px] font-medium text-secondary hover:underline">{L.historyUndo}</button>
+                      )}
+                    </div>
+                    <ul className="space-y-0.5">
+                      {h.descriptions.map((d, i) => <li key={i} className="text-[11px] text-muted-foreground">{d}</li>)}
+                    </ul>
+                  </div>
+                ))
+              )}
             </div>
           )}
 

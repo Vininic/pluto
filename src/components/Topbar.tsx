@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { CircleHelp, LayoutDashboard, Settings2, Sparkles } from "lucide-react";
+import { ArrowLeftRight, CircleHelp, FileText, LayoutDashboard, Settings2, Sparkles, Wallet } from "lucide-react";
 import { PlutoMark } from "@/components/PlutoLogo";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -16,6 +16,9 @@ export default function Topbar() {
 
   const crumb =
     location.pathname === "/dashboard" ? { icon: LayoutDashboard, label: nav.dashboard } :
+    location.pathname === "/transactions" ? { icon: ArrowLeftRight, label: nav.transactions } :
+    location.pathname === "/wallets" ? { icon: Wallet, label: nav.wallets } :
+    location.pathname === "/reports" ? { icon: FileText, label: nav.reports } :
     location.pathname === "/aetheris" ? { icon: Sparkles, label: nav.aetheris } :
     location.pathname === "/settings" ? { icon: Settings2, label: nav.settings } :
     location.pathname === "/about" ? { icon: CircleHelp, label: nav.about } :

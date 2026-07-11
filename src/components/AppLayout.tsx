@@ -2,12 +2,13 @@ import { useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import {
   ArrowLeftRight, CircleHelp, Cloud, FileText, LayoutDashboard,
-  MonitorSmartphone, PanelLeftClose, Settings2, Sparkles, Wallet,
+  Menu, MonitorSmartphone, PanelLeftClose, Settings2, Sparkles, Wallet,
 } from "lucide-react";
 import DemoPrompt from "@/components/DemoPrompt";
 import Logo, { PlutoMark } from "@/components/PlutoLogo";
 import ProfileDialog from "@/components/ProfileDialog";
 import Topbar from "@/components/Topbar";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/lib/auth";
 import { useT } from "@/lib/i18n/I18nProvider";
 import { cn } from "@/lib/utils";
@@ -51,6 +52,7 @@ export default function AppLayout() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const initial = session?.name.trim().charAt(0).toUpperCase() || "P";
 
   // Aetheris needs a real height chain (flex-1/h-full stretch to fill the
@@ -68,6 +70,17 @@ export default function AppLayout() {
         ? "bg-sidebar-accent text-sidebar-accent-foreground"
         : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
       collapsed && "justify-center px-0",
+    );
+
+  // Independent of the desktop sidebar's `collapsed` state — the drawer
+  // always shows full labels regardless of what the (hidden, on mobile)
+  // desktop sidebar is currently doing.
+  const mobileNavClass = ({ isActive }: { isActive: boolean }) =>
+    cn(
+      "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
+      isActive
+        ? "bg-sidebar-accent text-sidebar-accent-foreground"
+        : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
     );
 
   const ledger = [
@@ -135,7 +148,17 @@ export default function AppLayout() {
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <header className="flex items-center justify-between border-b border-sidebar-border bg-sidebar px-4 py-3 md:hidden">
-          <NavLink to="/dashboard"><Logo variant="light" /></NavLink>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              aria-label={nav.openMenu}
+              onClick={() => setMobileNavOpen(true)}
+              className="grid h-8 w-8 place-items-center rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <NavLink to="/dashboard"><Logo variant="light" /></NavLink>
+          </div>
           <div className="flex items-center gap-2">
             <NavLink to="/aetheris" aria-label={nav.aetheris} className="grid h-8 w-8 place-items-center rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent">
               <Sparkles className="h-4 w-4" />
@@ -153,6 +176,38 @@ export default function AppLayout() {
             </button>
           </div>
         </header>
+
+        <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+          <SheetContent side="left" className="flex w-72 flex-col gap-0 border-sidebar-border bg-sidebar p-0 text-sidebar-foreground">
+            <SheetTitle className="sr-only">{nav.dashboard}</SheetTitle>
+            <div className="px-5 pb-4 pt-5">
+              <Logo variant="light" />
+            </div>
+            <div className="vault-rule mx-4" />
+            <nav className="flex-1 overflow-y-auto px-3 py-4">
+              {ledger.map(({ to, label, icon: Icon }) => (
+                <NavLink key={to} to={to} onClick={() => setMobileNavOpen(false)} className={mobileNavClass}>
+                  <Icon className="h-4 w-4 shrink-0 text-secondary-soft" />
+                  <span className="flex-1">{label}</span>
+                </NavLink>
+              ))}
+              <NavLink to="/aetheris" onClick={() => setMobileNavOpen(false)} className={mobileNavClass}>
+                <Sparkles className="h-4 w-4 shrink-0 text-secondary-soft" />
+                <span>{nav.aetheris}</span>
+              </NavLink>
+
+              <div className="mb-2 mt-7 px-3 text-[10px] uppercase tracking-[0.22em] text-sidebar-foreground/50">
+                {nav.system}
+              </div>
+              {system.map(({ to, label, icon: Icon }) => (
+                <NavLink key={to} to={to} onClick={() => setMobileNavOpen(false)} className={mobileNavClass}>
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span>{label}</span>
+                </NavLink>
+              ))}
+            </nav>
+          </SheetContent>
+        </Sheet>
 
         <Topbar />
 
