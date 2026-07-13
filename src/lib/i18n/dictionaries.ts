@@ -127,6 +127,9 @@ const pt = {
       quickAddPlaceholder: "Descrição rápida…",
       viewList: "Lista",
       viewCalendar: "Calendário",
+      calendarHint: "Selecione um dia no calendário para ver os lançamentos.",
+      dayBalance: "Saldo do dia",
+      backToMonth: "Ver o mês inteiro",
     },
     triage: {
       eyebrow: "Triagem",
@@ -606,6 +609,9 @@ const en: typeof pt = {
       quickAddPlaceholder: "Quick description…",
       viewList: "List",
       viewCalendar: "Calendar",
+      calendarHint: "Pick a day on the calendar to see its transactions.",
+      dayBalance: "Day balance",
+      backToMonth: "View the whole month",
     },
     triage: {
       eyebrow: "Triage",

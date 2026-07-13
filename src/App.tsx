@@ -1,10 +1,13 @@
-import { Component, type ReactNode } from "react";
+import { Component, useEffect, type ReactNode } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/lib/theme/ThemeProvider";
 import { I18nProvider } from "@/lib/i18n/I18nProvider";
 import { AuthProvider, useAuth } from "@/lib/auth";
+import { useTheme } from "@/lib/theme/ThemeProvider";
+import { useI18n, type Locale } from "@/lib/i18n/I18nProvider";
+import { pullSuitePrefs, pushSuitePrefs } from "@/lib/prefs";
 import { LedgerProvider } from "@/lib/ledger/store";
 import { useLedgerSync } from "@/lib/sync/ledgerSync";
 import AppLayout from "@/components/AppLayout";
@@ -42,6 +45,26 @@ function LedgerSyncMount() {
   return null;
 }
 
+function SyncPrefs() {
+  const { isCloud } = useAuth();
+  const { setTheme } = useTheme();
+  const { setLocale } = useI18n();
+
+  useEffect(() => {
+    if (!isCloud) return;
+    let cancelled = false;
+    void pullSuitePrefs().then((prefs) => {
+      if (cancelled) return;
+      if (prefs?.theme) setTheme(prefs.theme);
+      if (prefs?.locale && (prefs.locale === "pt" || prefs.locale === "en"))
+        setLocale(prefs.locale as Locale);
+    });
+    return () => { cancelled = true; };
+  }, [isCloud, setTheme, setLocale]);
+
+  return null;
+}
+
 const App = () => (
   <ErrorBoundary>
     <ThemeProvider>
@@ -50,6 +73,7 @@ const App = () => (
           <Toaster />
           <BrowserRouter>
             <AuthProvider>
+              <SyncPrefs />
               <LedgerProvider>
                 <LedgerSyncMount />
                 <Routes>

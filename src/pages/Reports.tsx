@@ -190,29 +190,40 @@ export default function Reports() {
 
           <section className="pluto-card overflow-hidden p-0">
             <h2 className="font-display px-5 pt-5 text-lg text-primary">{L.categoryTable}</h2>
-            <div className="mt-3 divide-y divide-border">
-              <div className="grid grid-cols-[1fr_auto_auto_auto] gap-3 px-5 py-2 text-[11px] uppercase tracking-wider text-muted-foreground">
-                <span>{t.pluto.transactions.category}</span>
-                <span className="text-right">{t.pluto.dashboard.income}</span>
-                <span className="text-right">{t.pluto.dashboard.expense}</span>
-                <span className="text-right">{L.limitColumn}</span>
-              </div>
-              {selected.categories.map((c) => {
-                const budget = budgetByCategory.get(c.categoryId);
-                return (
-                  <div key={c.categoryId ?? "none"} className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-3 px-5 py-2 text-sm">
-                    <span className="flex min-w-0 items-center gap-2 truncate text-card-foreground">
-                      <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: categoryColor(c.categoryId) }} />
-                      <span className="truncate">{categoryName(c.categoryId)}</span>
-                    </span>
-                    <span className="num text-right text-emerald-600 dark:text-emerald-400">{c.incomeCents > 0 ? money.format(c.incomeCents) : "—"}</span>
-                    <span className="num text-right text-muted-foreground">{c.expenseCents > 0 ? money.format(c.expenseCents) : "—"}</span>
-                    <span className={cn("num text-right", budget?.overBudget ? "font-medium text-destructive" : "text-muted-foreground")}>
-                      {budget ? money.format(budget.limitCents) : "—"}
-                    </span>
-                  </div>
-                );
-              })}
+            {/* A real <table> so the four columns align across every row and the
+                money columns share one right edge — the previous per-row CSS grid
+                sized its `auto` columns independently, misaligning the numbers. */}
+            <div className="mt-3 overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-y border-border text-[11px] uppercase tracking-wider text-muted-foreground">
+                    <th className="px-5 py-2 text-left font-normal">{t.pluto.transactions.category}</th>
+                    <th className="px-3 py-2 text-right font-normal">{t.pluto.dashboard.income}</th>
+                    <th className="px-3 py-2 text-right font-normal">{t.pluto.dashboard.expense}</th>
+                    <th className="px-5 py-2 text-right font-normal">{L.limitColumn}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {selected.categories.map((c) => {
+                    const budget = budgetByCategory.get(c.categoryId);
+                    return (
+                      <tr key={c.categoryId ?? "none"}>
+                        <td className="px-5 py-2">
+                          <span className="flex min-w-0 items-center gap-2 text-card-foreground">
+                            <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: categoryColor(c.categoryId) }} />
+                            <span className="truncate">{categoryName(c.categoryId)}</span>
+                          </span>
+                        </td>
+                        <td className="num whitespace-nowrap px-3 py-2 text-right text-emerald-600 dark:text-emerald-400">{c.incomeCents > 0 ? money.format(c.incomeCents) : "—"}</td>
+                        <td className="num whitespace-nowrap px-3 py-2 text-right text-muted-foreground">{c.expenseCents > 0 ? money.format(c.expenseCents) : "—"}</td>
+                        <td className={cn("num whitespace-nowrap px-5 py-2 text-right", budget?.overBudget ? "font-medium text-destructive" : "text-muted-foreground")}>
+                          {budget ? money.format(budget.limitCents) : "—"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
             {selected.budgets.length === 0 && <p className="px-5 py-3 text-xs text-muted-foreground">{L.noBudgets}</p>}
             <div className="h-2" />

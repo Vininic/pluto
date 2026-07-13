@@ -53,10 +53,16 @@ export default function Transactions() {
       .sort((a, b) => (b.date + b.createdAt).localeCompare(a.date + a.createdAt));
   }, [data.transactions, month, walletId, categoryId, type, search]);
 
+  // In calendar mode the list is the selected day only — never the whole month
+  // stacked under the grid. No day selected ⇒ nothing (the calendar shows a hint).
   const filtered = useMemo(() => {
-    if (view !== "calendar" || !selectedDay) return monthFiltered;
+    if (view !== "calendar") return monthFiltered;
+    if (!selectedDay) return [];
     return monthFiltered.filter((tx) => tx.date === selectedDay);
   }, [monthFiltered, view, selectedDay]);
+
+  // Compact per-day net for a calendar cell: rounded reais, signed, no decimals.
+  const compactNet = (cents: number) => `${cents >= 0 ? "+" : "−"}${Math.abs(Math.round(cents / 100))}`;
 
   const dayTotals = useMemo(() => {
     const map = new Map<string, { net: number; count: number }>();
@@ -69,6 +75,8 @@ export default function Transactions() {
     }
     return map;
   }, [monthFiltered]);
+
+  const selectedDayTotals = selectedDay ? dayTotals.get(selectedDay) : undefined;
 
   const calendarDays = useMemo(() => {
     const [y, m] = month.split("-").map(Number);
@@ -196,10 +204,14 @@ export default function Transactions() {
                   )}
                 >
                   <span className="num text-card-foreground">{dayNum}</span>
-                  {totals && (
-                    <span className={cn("h-1 w-1 rounded-full", totals.net >= 0 ? "bg-emerald-500" : "bg-destructive")} />
+                  {totals ? (
+                    <span className={cn("num text-[10px] font-medium leading-none", totals.net >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-destructive")}>
+                      {compactNet(totals.net)}
+                    </span>
+                  ) : (
+                    <span className="h-[10px]" />
                   )}
-                  {totals && totals.count > 1 && <span className="num text-[9px] text-muted-foreground">{totals.count}</span>}
+                  {totals && totals.count > 0 && <span className="num text-[9px] text-muted-foreground leading-none">{totals.count}×</span>}
                 </button>
               );
             })}
@@ -207,7 +219,25 @@ export default function Transactions() {
         </div>
       )}
 
-      {filtered.length === 0 ? (
+      {view === "calendar" && selectedDay && (
+        <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+          <div className="flex items-baseline gap-3">
+            <span className="text-sm font-medium capitalize text-card-foreground">{fmt.long(new Date(`${selectedDay}T00:00:00`))}</span>
+            {selectedDayTotals && (
+              <span className={cn("num text-sm font-medium", selectedDayTotals.net >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-destructive")}>
+                {L.dayBalance}: {money.format(selectedDayTotals.net)}
+              </span>
+            )}
+          </div>
+          <button type="button" onClick={() => setSelectedDay(null)} className="text-xs text-secondary hover:underline">
+            {L.backToMonth}
+          </button>
+        </div>
+      )}
+
+      {view === "calendar" && !selectedDay ? (
+        <p className="pluto-card p-8 text-center text-sm text-muted-foreground">{L.calendarHint}</p>
+      ) : filtered.length === 0 ? (
         <p className="pluto-card p-8 text-center text-sm text-muted-foreground">{L.empty}</p>
       ) : (
         <div className="pluto-card divide-y divide-border overflow-hidden">
