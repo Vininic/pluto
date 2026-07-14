@@ -93,6 +93,7 @@ const pt = {
       color: "Cor",
       income: "Receita",
       expense: "Despesa",
+      viewTxCount: (n: number) => `${n} transaç${n === 1 ? "ão" : "ões"} — ver`,
     },
     transactions: {
       title: "Transações",
@@ -570,6 +571,7 @@ const en: typeof pt = {
       color: "Color",
       income: "Income",
       expense: "Expense",
+      viewTxCount: (n: number) => `${n} transaction${n === 1 ? "" : "s"} — view`,
     },
     transactions: {
       title: "Transactions",

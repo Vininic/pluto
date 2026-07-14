@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ArrowDownLeft, ArrowUpRight, Inbox as InboxIcon, PiggyBank, Plus } from "lucide-react";
 import BudgetRow from "@/components/BudgetRow";
 import CategoryDialog from "@/components/CategoryDialog";
@@ -24,6 +25,7 @@ export default function CategoriesPanel() {
   const money = useMoneyFormat();
   const fmt = useDateFormat();
   const t = useT();
+  const navigate = useNavigate();
   const LT = t.pluto.triage;
   const [dragId, setDragId] = useState<string | null>(null);
   const [overCategoryId, setOverCategoryId] = useState<string | null>(null);
@@ -122,26 +124,41 @@ export default function CategoriesPanel() {
                   onDragOver={() => dragId && setOverCategoryId(category.id)}
                   onDragLeave={() => setOverCategoryId((c) => (c === category.id ? null : c))}
                   onDrop={() => handleDrop(category.id)}
+                  onViewTransactions={() => navigate("/transactions", { state: { presetCategory: category.id } })}
                 />
               );
             })}
-            {incomeCategories.map((category) => (
-              <div
-                key={category.id}
-                onDragOver={(e) => { if (dragId) { e.preventDefault(); setOverCategoryId(category.id); } }}
-                onDragLeave={() => setOverCategoryId((c) => (c === category.id ? null : c))}
-                onDrop={(e) => { e.preventDefault(); handleDrop(category.id); }}
-                style={overCategoryId === category.id ? undefined : { background: `${category.color}10`, borderColor: `${category.color}40` }}
-                className={cn(
-                  "pluto-card relative flex items-center gap-2.5 py-1.5 pl-5 pr-3.5 transition-colors",
-                  overCategoryId === category.id && "border-secondary bg-secondary/10 ring-1 ring-secondary/40",
-                )}
-              >
-                <span className="absolute bottom-1.5 left-1.5 top-1.5 w-[3px] rounded-full" style={{ background: category.color }} />
-                <span className="min-w-0 flex-1 truncate font-medium text-primary">{category.name}</span>
-                <span className="num shrink-0 text-[11px] text-muted-foreground/70">({countByCategory.get(category.id) ?? 0})</span>
-              </div>
-            ))}
+            {incomeCategories.map((category) => {
+              const count = countByCategory.get(category.id) ?? 0;
+              return (
+                <div
+                  key={category.id}
+                  onDragOver={(e) => { if (dragId) { e.preventDefault(); setOverCategoryId(category.id); } }}
+                  onDragLeave={() => setOverCategoryId((c) => (c === category.id ? null : c))}
+                  onDrop={(e) => { e.preventDefault(); handleDrop(category.id); }}
+                  style={overCategoryId === category.id ? undefined : { background: `${category.color}10`, borderColor: `${category.color}40` }}
+                  className={cn(
+                    "pluto-card relative flex items-center gap-2.5 py-1.5 pl-5 pr-3.5 transition-colors",
+                    overCategoryId === category.id && "border-secondary bg-secondary/10 ring-1 ring-secondary/40",
+                  )}
+                >
+                  <span className="absolute bottom-1.5 left-1.5 top-1.5 w-[3px] rounded-full" style={{ background: category.color }} />
+                  <span className="min-w-0 flex-1 truncate font-medium text-primary">{category.name}</span>
+                  {count > 0 ? (
+                    <button
+                      type="button"
+                      title={t.pluto.categories.viewTxCount(count)}
+                      onClick={() => navigate("/transactions", { state: { presetCategory: category.id } })}
+                      className="num shrink-0 text-[11px] text-muted-foreground/70 hover:text-primary hover:underline"
+                    >
+                      ({count})
+                    </button>
+                  ) : (
+                    <span className="num shrink-0 text-[11px] text-muted-foreground/70">({count})</span>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

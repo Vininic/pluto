@@ -20,11 +20,14 @@ interface BudgetRowProps {
   onDragOver?: () => void;
   onDragLeave?: () => void;
   onDrop?: () => void;
+  /** Jumps to Transactions filtered to this category — the (n) count used to
+   *  just sit there with no way to tell what it meant or act on it. */
+  onViewTransactions?: () => void;
 }
 
 export default function BudgetRow({
   category, limitCents, spentCents, overBudget,
-  txCount, isDropTarget, onDragOver, onDragLeave, onDrop,
+  txCount, isDropTarget, onDragOver, onDragLeave, onDrop, onViewTransactions,
 }: BudgetRowProps) {
   const { setBudget } = useLedger();
   const money = useMoneyFormat();
@@ -58,7 +61,20 @@ export default function BudgetRow({
       <span className="absolute bottom-1.5 left-1.5 top-1.5 w-[3px] rounded-full" style={{ background: category.color }} />
       <div className="flex min-w-0 items-center gap-2">
         <span className="min-w-0 flex-1 truncate font-medium text-primary">{category.name}</span>
-        {typeof txCount === "number" && <span className="num shrink-0 text-[11px] text-muted-foreground/70">({txCount})</span>}
+        {typeof txCount === "number" && (
+          txCount > 0 && onViewTransactions ? (
+            <button
+              type="button"
+              title={t.pluto.categories.viewTxCount(txCount)}
+              onClick={onViewTransactions}
+              className="num shrink-0 text-[11px] text-muted-foreground/70 hover:text-primary hover:underline"
+            >
+              ({txCount})
+            </button>
+          ) : (
+            <span className="num shrink-0 text-[11px] text-muted-foreground/70">({txCount})</span>
+          )
+        )}
       </div>
 
       {/* Amount lives on its own row until the card's own rendered width

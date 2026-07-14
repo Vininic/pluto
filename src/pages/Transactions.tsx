@@ -30,7 +30,9 @@ export default function Transactions() {
   const presetCategory = (location.state as { presetCategory?: string } | null)?.presetCategory;
   const [month, setMonth] = useState(currentYYYYMM());
   const [walletId, setWalletId] = useState(ALL);
-  const [categoryId, setCategoryId] = useState(presetCategory === "uncategorized" ? UNCATEGORIZED : ALL);
+  const [categoryId, setCategoryId] = useState(
+    presetCategory === "uncategorized" ? UNCATEGORIZED : presetCategory ? presetCategory : ALL,
+  );
   const [type, setType] = useState(ALL);
   const [search, setSearch] = useState("");
   const [dialog, setDialog] = useState<{ open: boolean; transaction: Transaction | null }>({ open: false, transaction: null });
