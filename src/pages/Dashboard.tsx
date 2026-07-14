@@ -31,7 +31,7 @@ export default function Dashboard() {
 
   const summary = monthSummary(data, month);
   const top5 = topExpenses(data, month, 5);
-  const recent = [...data.transactions].sort((a, b) => (b.date + b.createdAt).localeCompare(a.date + a.createdAt)).slice(0, 4);
+  const recent = [...data.transactions].sort((a, b) => (b.date + b.createdAt).localeCompare(a.date + a.createdAt)).slice(0, 3);
   const evolutionPoints = evolution(data, 12, month);
 
   const categoryName = (id: string | null) => (id ? data.categories.find((c) => c.id === id)?.name ?? t.pluto.transactions.uncategorized : t.pluto.transactions.uncategorized);

@@ -122,13 +122,13 @@ export default function CategoriesPanel() {
                 onDragOver={(e) => { if (dragId) { e.preventDefault(); setOverCategoryId(category.id); } }}
                 onDragLeave={() => setOverCategoryId((c) => (c === category.id ? null : c))}
                 onDrop={(e) => { e.preventDefault(); handleDrop(category.id); }}
-                style={{ borderLeftColor: category.color, borderLeftWidth: 3 }}
+                style={overCategoryId === category.id ? undefined : { background: `${category.color}10`, borderColor: `${category.color}40` }}
                 className={cn(
-                  "pluto-card flex items-center gap-2.5 px-3.5 py-1.5 transition-colors",
+                  "pluto-card relative flex items-center gap-2.5 py-1.5 pl-5 pr-3.5 transition-colors",
                   overCategoryId === category.id && "border-secondary bg-secondary/10 ring-1 ring-secondary/40",
                 )}
               >
-                <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: category.color }} />
+                <span className="absolute bottom-1.5 left-1.5 top-1.5 w-[3px] rounded-full" style={{ background: category.color }} />
                 <span className="min-w-0 flex-1 truncate font-medium text-primary">{category.name}</span>
                 <span className="num shrink-0 text-[11px] text-muted-foreground/70">({countByCategory.get(category.id) ?? 0})</span>
               </div>

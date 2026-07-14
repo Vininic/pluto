@@ -49,14 +49,14 @@ export default function BudgetRow({
   return (
     <div
       {...dropHandlers}
-      style={{ borderLeftColor: category.color, borderLeftWidth: 3 }}
+      style={isDropTarget ? undefined : { background: `${category.color}10`, borderColor: `${category.color}40` }}
       className={cn(
-        "pluto-card flex flex-col gap-1.5 px-3.5 py-1.5 transition-colors sm:flex-row sm:items-center sm:gap-3",
+        "pluto-card relative flex flex-col gap-1.5 py-1.5 pl-5 pr-3.5 transition-colors sm:flex-row sm:items-center sm:gap-3",
         isDropTarget && "border-secondary bg-secondary/10 ring-1 ring-secondary/40",
       )}
     >
+      <span className="absolute bottom-1.5 left-1.5 top-1.5 w-[3px] rounded-full" style={{ background: category.color }} />
       <div className="flex min-w-0 items-center gap-2">
-        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: category.color }} />
         <span className="min-w-0 flex-1 truncate font-medium text-primary">{category.name}</span>
         {typeof txCount === "number" && <span className="num shrink-0 text-[11px] text-muted-foreground/70">({txCount})</span>}
       </div>

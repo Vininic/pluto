@@ -57,15 +57,16 @@ export default function GoalsPanel() {
                 key={goal.id}
                 type="button"
                 onClick={() => setDetail(goal)}
-                style={{ borderLeftColor: goal.color, borderLeftWidth: 3 }}
-                className="pluto-card p-3 text-left transition-shadow hover:shadow-elevated"
+                style={{ background: `${goal.color}10`, borderColor: `${goal.color}40` }}
+                className="pluto-card relative p-3 pl-5 text-left transition-shadow hover:shadow-elevated"
               >
+                <span className="absolute bottom-1.5 left-1.5 top-1.5 w-[3px] rounded-full" style={{ background: goal.color }} />
                 <div className="flex items-center justify-between gap-2">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: goal.color }} />
-                    <span className="truncate font-display text-base text-primary">{goal.name}</span>
-                  </div>
-                  <span className="shrink-0 rounded-full border border-border px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+                  <span className="min-w-0 flex-1 truncate font-display text-base text-primary">{goal.name}</span>
+                  <span
+                    className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider"
+                    style={{ background: `${goal.color}22`, color: goal.color }}
+                  >
                     {L[goal.horizon]}
                   </span>
                 </div>
