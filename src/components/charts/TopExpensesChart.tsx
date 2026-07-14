@@ -13,7 +13,7 @@ export default function TopExpensesChart({ items, categoryName, categoryColor }:
   const data = items.map((i) => ({ name: categoryName(i.categoryId), value: i.expenseCents, color: categoryColor(i.categoryId) }));
 
   return (
-    <div style={{ height: Math.max(120, data.length * 34) }} className="w-full">
+    <div style={{ height: Math.max(80, data.length * 20) }} className="w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} layout="vertical" margin={{ top: 0, right: 12, left: 0, bottom: 0 }}>
           <XAxis type="number" hide />

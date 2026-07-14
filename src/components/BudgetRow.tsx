@@ -50,48 +50,39 @@ export default function BudgetRow({
     <div
       {...dropHandlers}
       className={cn(
-        "pluto-card p-4 transition-colors",
+        "pluto-card flex items-center gap-3 px-3.5 py-1.5 transition-colors",
         isDropTarget && "border-secondary bg-secondary/10 ring-1 ring-secondary/40",
       )}
     >
-      <div className="flex min-w-0 items-center gap-2">
-        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: category.color }} />
-        <span className="min-w-0 flex-1 truncate font-medium text-primary">{category.name}</span>
-        {typeof txCount === "number" && <span className="num shrink-0 text-[11px] text-muted-foreground/70">({txCount})</span>}
-      </div>
-      {/* Amount/edit-limit lives on its own row, not squeezed onto the name's line —
-          in a narrow 2-column card, a long category name and "Sem limite definido"
-          were fighting for the same line and losing the name to truncation. */}
-      <div className="mt-1.5 flex justify-end">
-        {editing ? (
-          <Input
-            autoFocus
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onBlur={commit}
-            onKeyDown={(e) => { if (e.key === "Enter") commit(); if (e.key === "Escape") setEditing(false); }}
-            placeholder="0,00"
-            inputMode="decimal"
-            className="h-8 w-28 text-right"
-          />
-        ) : (
-          <button type="button" onClick={() => setEditing(true)} className="num text-sm text-muted-foreground hover:text-primary">
-            {limitCents > 0 ? money.format(limitCents) : L.noLimit}
-          </button>
-        )}
-      </div>
+      <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: category.color }} />
+      <span className="min-w-0 flex-1 truncate font-medium text-primary">{category.name}</span>
+      {typeof txCount === "number" && <span className="num shrink-0 text-[11px] text-muted-foreground/70">({txCount})</span>}
+
       {limitCents > 0 && (
-        <>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
-            <div className={cn("h-full rounded-full", overBudget ? "bg-destructive" : "bg-secondary")} style={{ width: `${pct}%` }} />
-          </div>
-          <div className="num mt-1.5 flex items-center justify-between text-[11px] text-muted-foreground">
-            <span>{L.spent}: {money.format(spentCents)}</span>
-            <span className={overBudget ? "font-medium text-destructive" : ""}>
-              {overBudget ? L.overBudget : `${L.remaining}: ${money.format(limitCents - spentCents)}`}
-            </span>
-          </div>
-        </>
+        <div className="hidden h-1.5 w-16 shrink-0 overflow-hidden rounded-full bg-muted sm:block">
+          <div className={cn("h-full rounded-full", overBudget ? "bg-destructive" : "bg-secondary")} style={{ width: `${pct}%` }} />
+        </div>
+      )}
+
+      {editing ? (
+        <Input
+          autoFocus
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => { if (e.key === "Enter") commit(); if (e.key === "Escape") setEditing(false); }}
+          placeholder="0,00"
+          inputMode="decimal"
+          className="h-7 w-24 shrink-0 text-right text-xs"
+        />
+      ) : (
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          className={cn("num shrink-0 text-xs hover:text-primary", overBudget ? "font-medium text-destructive" : "text-muted-foreground")}
+        >
+          {limitCents > 0 ? `${money.format(spentCents)} / ${money.format(limitCents)}` : L.noLimit}
+        </button>
       )}
     </div>
   );

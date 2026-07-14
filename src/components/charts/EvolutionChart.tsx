@@ -19,7 +19,7 @@ export default function EvolutionChart({ points }: EvolutionChartProps) {
   const data = points.map((p) => ({ ...p, label: monthLabel(p.month, bcp47) }));
 
   return (
-    <div className="h-56 w-full">
+    <div className="h-36 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
           <defs>

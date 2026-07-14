@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowDownLeft, ArrowUpRight, Inbox as InboxIcon, PiggyBank, Plus } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, ChevronDown, ChevronUp, Inbox as InboxIcon, PiggyBank, Plus } from "lucide-react";
 import BudgetRow from "@/components/BudgetRow";
 import CategoryDialog from "@/components/CategoryDialog";
 import { Button } from "@/components/ui/button";
@@ -24,11 +24,17 @@ export default function CategoriesPanel() {
   const [dragId, setDragId] = useState<string | null>(null);
   const [overCategoryId, setOverCategoryId] = useState<string | null>(null);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+  const [showAllExpenses, setShowAllExpenses] = useState(false);
   const month = currentYYYYMM();
 
   const categories = data.categories.filter((c) => !c.archivedAt);
-  const expenseCategories = categories.filter((c) => c.kind === "expense");
+  const allExpenseCategories = categories.filter((c) => c.kind === "expense");
   const incomeCategories = categories.filter((c) => c.kind !== "expense");
+  // Cap the visible list so a category-rich account doesn't single-handedly
+  // push the whole dashboard into a tall scroll — the rest are one click away.
+  const VISIBLE_EXPENSE_COUNT = 4;
+  const expenseCategories = showAllExpenses ? allExpenseCategories : allExpenseCategories.slice(0, VISIBLE_EXPENSE_COUNT);
+  const hiddenExpenseCount = allExpenseCategories.length - expenseCategories.length;
   const statusByCategory = new Map(budgetStatus(data, month).map((s) => [s.categoryId, s]));
 
   const inbox = data.transactions
@@ -77,7 +83,7 @@ export default function CategoriesPanel() {
                     draggable
                     onDragStart={(e) => { e.dataTransfer.setData("text/plain", tx.id); e.dataTransfer.effectAllowed = "move"; setDragId(tx.id); }}
                     onDragEnd={() => { setDragId(null); setOverCategoryId(null); }}
-                    className={cn("pluto-card cursor-grab p-3 active:cursor-grabbing", dragId === tx.id && "opacity-40")}
+                    className={cn("pluto-card cursor-grab p-2.5 active:cursor-grabbing", dragId === tx.id && "opacity-40")}
                   >
                     <div className="flex items-center gap-2">
                       <Icon className={cn("h-3.5 w-3.5 shrink-0", tx.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground")} />
@@ -93,7 +99,7 @@ export default function CategoriesPanel() {
             </div>
           </section>
 
-          <div className="grid min-w-0 flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="flex min-w-0 flex-1 flex-col gap-2">
             {expenseCategories.map((category) => {
               const status = statusByCategory.get(category.id);
               return (
@@ -111,6 +117,24 @@ export default function CategoriesPanel() {
                 />
               );
             })}
+            {hiddenExpenseCount > 0 && (
+              <button
+                type="button"
+                onClick={() => setShowAllExpenses(true)}
+                className="flex items-center justify-center gap-1 rounded-lg py-1 text-xs text-muted-foreground hover:text-primary"
+              >
+                <ChevronDown className="h-3.5 w-3.5" /> {LT.showMore(hiddenExpenseCount)}
+              </button>
+            )}
+            {showAllExpenses && allExpenseCategories.length > VISIBLE_EXPENSE_COUNT && (
+              <button
+                type="button"
+                onClick={() => setShowAllExpenses(false)}
+                className="flex items-center justify-center gap-1 rounded-lg py-1 text-xs text-muted-foreground hover:text-primary"
+              >
+                <ChevronUp className="h-3.5 w-3.5" /> {LT.showLess}
+              </button>
+            )}
             {incomeCategories.map((category) => (
               <div
                 key={category.id}
@@ -118,7 +142,7 @@ export default function CategoriesPanel() {
                 onDragLeave={() => setOverCategoryId((c) => (c === category.id ? null : c))}
                 onDrop={(e) => { e.preventDefault(); handleDrop(category.id); }}
                 className={cn(
-                  "pluto-card flex items-center gap-2.5 p-4 transition-colors",
+                  "pluto-card flex items-center gap-2.5 px-3.5 py-1.5 transition-colors",
                   overCategoryId === category.id && "border-secondary bg-secondary/10 ring-1 ring-secondary/40",
                 )}
               >

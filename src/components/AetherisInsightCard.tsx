@@ -70,7 +70,7 @@ export default function AetherisInsightCard({ month }: AetherisInsightCardProps)
   }
 
   return (
-    <div className="pluto-card-elevated relative overflow-hidden p-6">
+    <div className="pluto-card-elevated relative overflow-hidden p-3.5">
       <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-secondary/10 blur-2xl" />
       <div className="relative flex items-center justify-between">
         <div className="flex items-center gap-2.5">
@@ -90,10 +90,10 @@ export default function AetherisInsightCard({ month }: AetherisInsightCardProps)
         </span>
       </div>
 
-      <div className="relative mt-4 border-t border-border/40 pt-4">
+      <div className="relative mt-2.5 border-t border-border/40 pt-2.5">
         <p className="text-sm font-medium text-card-foreground">{title}</p>
         {body && <p className="mt-1 text-sm text-muted-foreground">{body}</p>}
-        <Link to="/aetheris" className="mt-3 inline-flex items-center gap-1 text-xs text-secondary hover:underline">
+        <Link to="/aetheris" className="mt-2 inline-flex items-center gap-1 text-xs text-secondary hover:underline">
           {t.pluto.dashboard.askAetheris} <ArrowUpRight className="h-3 w-3" />
         </Link>
       </div>
