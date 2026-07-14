@@ -51,7 +51,7 @@ export default function CategoriesPanel() {
 
   return (
     <section className="flex flex-col overflow-hidden rounded-xl border border-border/70 bg-surface-veil/40 xl:h-full">
-      <header className="flex shrink-0 items-center gap-2 px-3.5 pb-2 pt-3">
+      <header className="flex shrink-0 items-center gap-2 px-3.5 pb-1.5 pt-2.5">
         <PiggyBank className="h-4 w-4 text-secondary" />
         <h2 className="font-display text-lg text-primary">{t.pluto.dashboard.tabCategories}</h2>
         <Button size="sm" variant="outline" className="ml-auto h-7 text-xs" onClick={() => setCategoryDialogOpen(true)}>
@@ -63,7 +63,7 @@ export default function CategoriesPanel() {
       {categories.length === 0 ? (
         <p className="p-8 text-center text-sm text-muted-foreground">{LT.noCategoriesYet}</p>
       ) : (
-        <div className="flex min-h-0 flex-col gap-3 p-2.5 xl:flex-1 xl:flex-row">
+        <div className="flex min-h-0 flex-col gap-3 p-2 xl:flex-1 xl:flex-row">
           {/* max-h caps stand alone on mobile/tablet (page scrolls normally
               there); at xl:, xl:max-h-none + xl:flex-1 let both this and the
               category list stretch to fill whatever height the dashboard's

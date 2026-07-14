@@ -38,14 +38,14 @@ export default function Dashboard() {
   const categoryColor = (id: string | null) => (id ? data.categories.find((c) => c.id === id)?.color : undefined) ?? "hsl(var(--muted-foreground))";
 
   return (
-    <div className="mx-auto w-full max-w-[1600px] space-y-3">
+    <div className="mx-auto w-full max-w-[1600px] space-y-2.5">
       <header>
         <h1 className="font-display text-3xl text-primary">{L.title}</h1>
       </header>
 
       <div className="grid grid-cols-1 items-stretch gap-4 xl:grid-cols-5">
         {/* Left column — stats + goals */}
-        <div className="flex flex-col gap-3 xl:col-span-2 xl:min-h-0">
+        <div className="flex flex-col gap-2.5 xl:col-span-2 xl:min-h-0">
           <section className="pluto-card-elevated p-3">
             <div className="text-[11px] uppercase tracking-[0.22em] text-secondary">{L.netBalance}</div>
             <div className={cn("font-display num mt-1 text-4xl", summary.netCents >= 0 ? "text-primary" : "text-destructive")}>
@@ -68,7 +68,7 @@ export default function Dashboard() {
               so its bottom always lands exactly on Categories' bottom
               instead of needing a hand-tuned item count. */}
           <section className="flex max-h-[456px] flex-col overflow-hidden rounded-xl border border-border/70 bg-surface-veil/40 xl:max-h-none xl:flex-1 xl:min-h-0">
-            <header className="flex shrink-0 items-center gap-2 px-3.5 pb-2 pt-3">
+            <header className="flex shrink-0 items-center gap-2 px-3.5 pb-1.5 pt-2.5">
               <Receipt className="h-4 w-4 text-secondary" />
               <h2 className="font-display text-lg text-primary">{L.recentTransactions}</h2>
               <Link to="/transactions" className="ml-auto text-xs text-secondary hover:underline">{L.viewAll}</Link>
@@ -77,7 +77,7 @@ export default function Dashboard() {
             {recent.length === 0 ? (
               <p className="p-8 text-center text-sm text-muted-foreground">{L.noData}</p>
             ) : (
-              <div className="overflow-y-auto p-2.5 xl:min-h-0 xl:flex-1">
+              <div className="overflow-y-auto p-2 xl:min-h-0 xl:flex-1">
                 {recent.map((tx) => {
                   const Icon = TYPE_ICON[tx.type];
                   const signed = tx.type === "income" ? tx.amountCents : tx.type === "expense" ? -tx.amountCents : 0;
@@ -97,15 +97,15 @@ export default function Dashboard() {
         </div>
 
         {/* Right column — evolution chart + categories */}
-        <div className="flex flex-col gap-3 xl:col-span-3 xl:min-h-0">
-          <section className="pluto-card p-4 xl:shrink-0">
+        <div className="flex flex-col gap-2.5 xl:col-span-3 xl:min-h-0">
+          <section className="pluto-card p-3.5 xl:shrink-0">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-display text-lg text-primary">{L.evolution}</h2>
               <MonthStepper month={month} onChange={setMonth} />
             </div>
             <EvolutionChart points={evolutionPoints} />
 
-            <div className="mt-3 border-t border-border pt-3">
+            <div className="mt-2.5 border-t border-border pt-2.5">
               <h3 className="font-display text-sm text-primary">{L.topExpenses}</h3>
               {top5.length === 0 ? (
                 <p className="mt-2 text-sm text-muted-foreground">{L.noData}</p>

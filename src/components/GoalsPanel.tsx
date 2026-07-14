@@ -33,7 +33,7 @@ export default function GoalsPanel() {
 
   return (
     <section className="flex flex-col overflow-hidden rounded-xl border border-border/70 bg-surface-veil/40">
-      <header className="flex shrink-0 items-center gap-2 px-3.5 pb-2 pt-3">
+      <header className="flex shrink-0 items-center gap-2 px-3.5 pb-1.5 pt-2.5">
         <Target className="h-4 w-4 text-secondary" />
         <h2 className="font-display text-lg text-primary">{t.pluto.dashboard.tabGoals}</h2>
         <Button size="sm" variant="outline" className="ml-auto h-7 text-xs" onClick={() => setNewOpen(true)}>
