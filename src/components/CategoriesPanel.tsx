@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowDownLeft, ArrowUpRight, Inbox as InboxIcon, Plus } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Inbox as InboxIcon, PiggyBank, Plus } from "lucide-react";
 import BudgetRow from "@/components/BudgetRow";
 import CategoryDialog from "@/components/CategoryDialog";
 import { Button } from "@/components/ui/button";
@@ -47,8 +47,10 @@ export default function CategoriesPanel() {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-end">
-        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setCategoryDialogOpen(true)}>
+      <div className="flex items-center gap-2">
+        <PiggyBank className="h-4 w-4 text-secondary" />
+        <h2 className="font-display text-lg text-primary">{t.pluto.dashboard.tabCategories}</h2>
+        <Button size="sm" variant="outline" className="ml-auto h-7 text-xs" onClick={() => setCategoryDialogOpen(true)}>
           <Plus className="mr-1 h-3.5 w-3.5" /> {t.pluto.categories.newCategory}
         </Button>
       </div>
@@ -91,7 +93,7 @@ export default function CategoriesPanel() {
             </div>
           </section>
 
-          <div className="grid min-w-0 flex-1 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid min-w-0 flex-1 grid-cols-1 gap-3">
             {expenseCategories.map((category) => {
               const status = statusByCategory.get(category.id);
               return (

@@ -217,8 +217,12 @@ export default function AppLayout() {
               <Outlet />
             </div>
           ) : (
-            <div className="flex min-h-full flex-col">
-              <div className="flex-1 p-5 lg:p-8">
+            <div className="flex flex-col">
+              {/* No min-h-full here — that used to force this wrapper to fill the
+                  whole viewport height, pushing the footer to the bottom even on
+                  short-content pages and leaving a large dead gap above it. The
+                  footer now just follows the content. */}
+              <div className="p-5 lg:p-8">
                 <Outlet />
               </div>
               <footer className="flex items-center justify-center gap-2 py-6 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">

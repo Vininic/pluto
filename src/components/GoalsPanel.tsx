@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Plus } from "lucide-react";
+import { Check, Plus, Target } from "lucide-react";
 import GoalDetailDialog from "@/components/GoalDetailDialog";
 import GoalDialog from "@/components/GoalDialog";
 import { Button } from "@/components/ui/button";
@@ -29,8 +29,10 @@ export default function GoalsPanel() {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-end">
-        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setNewOpen(true)}>
+      <div className="flex items-center gap-2">
+        <Target className="h-4 w-4 text-secondary" />
+        <h2 className="font-display text-lg text-primary">{t.pluto.dashboard.tabGoals}</h2>
+        <Button size="sm" variant="outline" className="ml-auto h-7 text-xs" onClick={() => setNewOpen(true)}>
           <Plus className="mr-1 h-3.5 w-3.5" /> {L.newGoal}
         </Button>
       </div>
@@ -38,7 +40,7 @@ export default function GoalsPanel() {
       {active.length === 0 ? (
         <p className="pluto-card p-8 text-center text-sm text-muted-foreground">{L.empty}</p>
       ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3">
           {active.map((goal) => {
             const progress = goalProgress(data, goal.id);
             const pct = goal.targetCents > 0 ? Math.min(100, progress?.progressPct ?? 0) : 0;
