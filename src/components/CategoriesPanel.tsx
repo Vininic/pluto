@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowDownLeft, ArrowUpRight, ChevronDown, ChevronUp, Inbox as InboxIcon, PiggyBank, Plus } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Inbox as InboxIcon, PiggyBank, Plus } from "lucide-react";
 import BudgetRow from "@/components/BudgetRow";
 import CategoryDialog from "@/components/CategoryDialog";
 import { Button } from "@/components/ui/button";
@@ -13,28 +13,26 @@ import { cn } from "@/lib/utils";
  *  visual languages — a horizontally-scrolling row of near-empty drop cards,
  *  and a separate budget-progress grid. Now: one fixed Inbox column (drag
  *  source) beside one responsive grid of category cards (drop targets) that
- *  also carry their real budget status when they have one. */
+ *  also carry their real budget status when they have one.
+ *
+ *  Bounded like Kairos' `BoardColumn`: header (title + button) lives inside
+ *  one card boundary, and both the inbox and the category list cap at a
+ *  fixed height with their own scroll — a category-rich account scrolls
+ *  in place instead of pushing the rest of the dashboard down. */
 export default function CategoriesPanel() {
   const { data, categorizeTransactions } = useLedger();
   const money = useMoneyFormat();
   const fmt = useDateFormat();
   const t = useT();
-  const L = t.pluto.budgets;
   const LT = t.pluto.triage;
   const [dragId, setDragId] = useState<string | null>(null);
   const [overCategoryId, setOverCategoryId] = useState<string | null>(null);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
-  const [showAllExpenses, setShowAllExpenses] = useState(false);
   const month = currentYYYYMM();
 
   const categories = data.categories.filter((c) => !c.archivedAt);
-  const allExpenseCategories = categories.filter((c) => c.kind === "expense");
+  const expenseCategories = categories.filter((c) => c.kind === "expense");
   const incomeCategories = categories.filter((c) => c.kind !== "expense");
-  // Cap the visible list so a category-rich account doesn't single-handedly
-  // push the whole dashboard into a tall scroll — the rest are one click away.
-  const VISIBLE_EXPENSE_COUNT = 4;
-  const expenseCategories = showAllExpenses ? allExpenseCategories : allExpenseCategories.slice(0, VISIBLE_EXPENSE_COUNT);
-  const hiddenExpenseCount = allExpenseCategories.length - expenseCategories.length;
   const statusByCategory = new Map(budgetStatus(data, month).map((s) => [s.categoryId, s]));
 
   const inbox = data.transactions
@@ -52,27 +50,28 @@ export default function CategoriesPanel() {
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
+    <section className="flex flex-col overflow-hidden rounded-xl border border-border/70 bg-surface-veil/40">
+      <header className="flex shrink-0 items-center gap-2 px-3.5 pb-2 pt-3">
         <PiggyBank className="h-4 w-4 text-secondary" />
         <h2 className="font-display text-lg text-primary">{t.pluto.dashboard.tabCategories}</h2>
         <Button size="sm" variant="outline" className="ml-auto h-7 text-xs" onClick={() => setCategoryDialogOpen(true)}>
           <Plus className="mr-1 h-3.5 w-3.5" /> {t.pluto.categories.newCategory}
         </Button>
-      </div>
+      </header>
+      <div className="vault-rule mx-3.5 shrink-0" />
 
       {categories.length === 0 ? (
-        <p className="pluto-card p-8 text-center text-sm text-muted-foreground">{LT.noCategoriesYet}</p>
+        <p className="p-8 text-center text-sm text-muted-foreground">{LT.noCategoriesYet}</p>
       ) : (
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
-          <section className="flex w-full shrink-0 flex-col overflow-hidden rounded-xl border border-border/70 bg-surface-veil/40 lg:w-64">
-            <header className="flex shrink-0 items-center gap-1.5 px-3 pb-1 pt-3">
+        <div className="flex min-h-0 flex-col gap-3 p-2.5 lg:flex-row">
+          <div className="flex max-h-[420px] w-full shrink-0 flex-col overflow-hidden rounded-lg border border-border/60 lg:w-64">
+            <header className="flex shrink-0 items-center gap-1.5 px-2.5 pb-1 pt-2">
               <InboxIcon className="h-3.5 w-3.5 text-secondary" />
               <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">{LT.inbox}</h3>
               <span className="num ml-auto text-xs text-muted-foreground/70">{inbox.length}</span>
             </header>
-            <div className="vault-rule mx-3 shrink-0" />
-            <div className="flex max-h-96 min-h-0 flex-col gap-1.5 overflow-y-auto p-2">
+            <div className="vault-rule mx-2.5 shrink-0" />
+            <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto p-2">
               {inbox.length === 0 && <p className="p-4 text-center text-xs text-muted-foreground">{LT.empty}</p>}
               {inbox.map((tx) => {
                 const wallet = data.wallets.find((w) => w.id === tx.walletId);
@@ -97,9 +96,9 @@ export default function CategoriesPanel() {
                 );
               })}
             </div>
-          </section>
+          </div>
 
-          <div className="flex min-w-0 flex-1 flex-col gap-2">
+          <div className="flex max-h-[420px] min-w-0 flex-1 flex-col gap-2 overflow-y-auto pr-1">
             {expenseCategories.map((category) => {
               const status = statusByCategory.get(category.id);
               return (
@@ -117,30 +116,13 @@ export default function CategoriesPanel() {
                 />
               );
             })}
-            {hiddenExpenseCount > 0 && (
-              <button
-                type="button"
-                onClick={() => setShowAllExpenses(true)}
-                className="flex items-center justify-center gap-1 rounded-lg py-1 text-xs text-muted-foreground hover:text-primary"
-              >
-                <ChevronDown className="h-3.5 w-3.5" /> {LT.showMore(hiddenExpenseCount)}
-              </button>
-            )}
-            {showAllExpenses && allExpenseCategories.length > VISIBLE_EXPENSE_COUNT && (
-              <button
-                type="button"
-                onClick={() => setShowAllExpenses(false)}
-                className="flex items-center justify-center gap-1 rounded-lg py-1 text-xs text-muted-foreground hover:text-primary"
-              >
-                <ChevronUp className="h-3.5 w-3.5" /> {LT.showLess}
-              </button>
-            )}
             {incomeCategories.map((category) => (
               <div
                 key={category.id}
                 onDragOver={(e) => { if (dragId) { e.preventDefault(); setOverCategoryId(category.id); } }}
                 onDragLeave={() => setOverCategoryId((c) => (c === category.id ? null : c))}
                 onDrop={(e) => { e.preventDefault(); handleDrop(category.id); }}
+                style={{ borderLeftColor: category.color, borderLeftWidth: 3 }}
                 className={cn(
                   "pluto-card flex items-center gap-2.5 px-3.5 py-1.5 transition-colors",
                   overCategoryId === category.id && "border-secondary bg-secondary/10 ring-1 ring-secondary/40",
@@ -156,6 +138,6 @@ export default function CategoriesPanel() {
       )}
 
       <CategoryDialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen} defaultKind="expense" />
-    </div>
+    </section>
   );
 }

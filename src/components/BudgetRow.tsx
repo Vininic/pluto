@@ -49,41 +49,49 @@ export default function BudgetRow({
   return (
     <div
       {...dropHandlers}
+      style={{ borderLeftColor: category.color, borderLeftWidth: 3 }}
       className={cn(
-        "pluto-card flex items-center gap-3 px-3.5 py-1.5 transition-colors",
+        "pluto-card flex flex-col gap-1.5 px-3.5 py-1.5 transition-colors sm:flex-row sm:items-center sm:gap-3",
         isDropTarget && "border-secondary bg-secondary/10 ring-1 ring-secondary/40",
       )}
     >
-      <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: category.color }} />
-      <span className="min-w-0 flex-1 truncate font-medium text-primary">{category.name}</span>
-      {typeof txCount === "number" && <span className="num shrink-0 text-[11px] text-muted-foreground/70">({txCount})</span>}
+      <div className="flex min-w-0 items-center gap-2">
+        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: category.color }} />
+        <span className="min-w-0 flex-1 truncate font-medium text-primary">{category.name}</span>
+        {typeof txCount === "number" && <span className="num shrink-0 text-[11px] text-muted-foreground/70">({txCount})</span>}
+      </div>
 
-      {limitCents > 0 && (
-        <div className="hidden h-1.5 w-16 shrink-0 overflow-hidden rounded-full bg-muted sm:block">
-          <div className={cn("h-full rounded-full", overBudget ? "bg-destructive" : "bg-secondary")} style={{ width: `${pct}%` }} />
-        </div>
-      )}
+      {/* Amount lives on its own row below `sm` — the combined "spent / limit"
+          string is wide enough that squeezing it onto the name's line at
+          phone widths pushed the name back into truncating. */}
+      <div className="flex shrink-0 items-center justify-end gap-3">
+        {limitCents > 0 && (
+          <div className="hidden h-1.5 w-16 shrink-0 overflow-hidden rounded-full bg-muted sm:block">
+            <div className="h-full rounded-full" style={{ width: `${pct}%`, background: overBudget ? "hsl(var(--destructive))" : category.color }} />
+          </div>
+        )}
 
-      {editing ? (
-        <Input
-          autoFocus
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onBlur={commit}
-          onKeyDown={(e) => { if (e.key === "Enter") commit(); if (e.key === "Escape") setEditing(false); }}
-          placeholder="0,00"
-          inputMode="decimal"
-          className="h-7 w-24 shrink-0 text-right text-xs"
-        />
-      ) : (
-        <button
-          type="button"
-          onClick={() => setEditing(true)}
-          className={cn("num shrink-0 text-xs hover:text-primary", overBudget ? "font-medium text-destructive" : "text-muted-foreground")}
-        >
-          {limitCents > 0 ? `${money.format(spentCents)} / ${money.format(limitCents)}` : L.noLimit}
-        </button>
-      )}
+        {editing ? (
+          <Input
+            autoFocus
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commit}
+            onKeyDown={(e) => { if (e.key === "Enter") commit(); if (e.key === "Escape") setEditing(false); }}
+            placeholder="0,00"
+            inputMode="decimal"
+            className="h-7 w-24 shrink-0 text-right text-xs"
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className={cn("num shrink-0 text-xs hover:text-primary", overBudget ? "font-medium text-destructive" : "text-muted-foreground")}
+          >
+            {limitCents > 0 ? `${money.format(spentCents)} / ${money.format(limitCents)}` : L.noLimit}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

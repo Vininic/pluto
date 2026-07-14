@@ -9,12 +9,17 @@ import type { Goal } from "@/lib/ledger/types";
 import { useDateFormat, useMoneyFormat, useT } from "@/lib/i18n/I18nProvider";
 import { cn } from "@/lib/utils";
 
-const ITEM_PREVIEW_COUNT = 1;
+const ITEM_PREVIEW_COUNT = 2;
 
 /** The full goal grid, richer than the old Dashboard preview — shows a
  *  checklist preview per card instead of just an item count, since there's
  *  a full page width to use now instead of a dialog's. Inline content — no
- *  Dialog chrome — meant to sit inside a Dashboard tab. */
+ *  Dialog chrome — meant to sit inside a Dashboard tab.
+ *
+ *  Bounded like Kairos' `BoardColumn`: header (title + button) lives inside
+ *  one card boundary instead of floating loose above a bare list, and the
+ *  list itself caps at roughly two cards tall with its own scroll — past
+ *  goal counts don't push the rest of the dashboard down. */
 export default function GoalsPanel() {
   const { data } = useLedger();
   const money = useMoneyFormat();
@@ -28,19 +33,20 @@ export default function GoalsPanel() {
   const selected = detail ? data.goals.find((g) => g.id === detail.id) ?? null : null;
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
+    <section className="flex flex-col overflow-hidden rounded-xl border border-border/70 bg-surface-veil/40">
+      <header className="flex shrink-0 items-center gap-2 px-3.5 pb-2 pt-3">
         <Target className="h-4 w-4 text-secondary" />
         <h2 className="font-display text-lg text-primary">{t.pluto.dashboard.tabGoals}</h2>
         <Button size="sm" variant="outline" className="ml-auto h-7 text-xs" onClick={() => setNewOpen(true)}>
           <Plus className="mr-1 h-3.5 w-3.5" /> {L.newGoal}
         </Button>
-      </div>
+      </header>
+      <div className="vault-rule mx-3.5 shrink-0" />
 
       {active.length === 0 ? (
-        <p className="pluto-card p-8 text-center text-sm text-muted-foreground">{L.empty}</p>
+        <p className="p-8 text-center text-sm text-muted-foreground">{L.empty}</p>
       ) : (
-        <div className="grid grid-cols-1 gap-2">
+        <div className="grid max-h-[340px] grid-cols-1 gap-2 overflow-y-auto p-2">
           {active.map((goal) => {
             const progress = goalProgress(data, goal.id);
             const pct = goal.targetCents > 0 ? Math.min(100, progress?.progressPct ?? 0) : 0;
@@ -51,6 +57,7 @@ export default function GoalsPanel() {
                 key={goal.id}
                 type="button"
                 onClick={() => setDetail(goal)}
+                style={{ borderLeftColor: goal.color, borderLeftWidth: 3 }}
                 className="pluto-card p-3 text-left transition-shadow hover:shadow-elevated"
               >
                 <div className="flex items-center justify-between gap-2">
@@ -63,7 +70,7 @@ export default function GoalsPanel() {
                   </span>
                 </div>
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
-                  <div className="h-full rounded-full bg-secondary" style={{ width: `${pct}%` }} />
+                  <div className="h-full rounded-full" style={{ width: `${pct}%`, background: goal.color }} />
                 </div>
                 <div className="num mt-1 flex items-center justify-between text-xs text-muted-foreground">
                   <span>{money.format(progress?.contributedCents ?? 0)} / {money.format(goal.targetCents)}</span>
@@ -102,6 +109,6 @@ export default function GoalsPanel() {
 
       <GoalDialog open={newOpen} onOpenChange={setNewOpen} />
       <GoalDetailDialog open={!!selected} onOpenChange={(open) => { if (!open) setDetail(null); }} goal={selected} />
-    </div>
+    </section>
   );
 }

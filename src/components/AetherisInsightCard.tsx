@@ -70,7 +70,7 @@ export default function AetherisInsightCard({ month }: AetherisInsightCardProps)
   }
 
   return (
-    <div className="pluto-card-elevated relative overflow-hidden p-3.5">
+    <div className="pluto-card-elevated relative overflow-hidden p-3">
       <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-secondary/10 blur-2xl" />
       <div className="relative flex items-center justify-between">
         <div className="flex items-center gap-2.5">

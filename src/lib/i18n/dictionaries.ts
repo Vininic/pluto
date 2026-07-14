@@ -137,8 +137,6 @@ const pt = {
       inbox: "Caixa de entrada",
       empty: "Tudo categorizado — nada para triar.",
       noCategoriesYet: "Crie uma categoria para começar a triar.",
-      showMore: (n: number) => `Mostrar mais ${n}`,
-      showLess: "Mostrar menos",
     },
     budgets: {
       eyebrow: "Orçamentos",
@@ -622,8 +620,6 @@ const en: typeof pt = {
       inbox: "Inbox",
       empty: "Everything's categorized — nothing to triage.",
       noCategoriesYet: "Create a category to start triaging.",
-      showMore: (n: number) => `Show ${n} more`,
-      showLess: "Show less",
     },
     budgets: {
       eyebrow: "Budgets",
