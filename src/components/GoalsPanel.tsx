@@ -9,19 +9,18 @@ import type { Goal } from "@/lib/ledger/types";
 import { useDateFormat, useMoneyFormat, useT } from "@/lib/i18n/I18nProvider";
 import { cn } from "@/lib/utils";
 
-const ITEM_PREVIEW_COUNT = 2;
-
-/** The full goal grid, richer than the old Dashboard preview — shows a
- *  checklist preview per card instead of just an item count, since there's
+/** The full goal grid, richer than the old Dashboard preview — shows the
+ *  whole checklist per card instead of just an item count, since there's
  *  a full page width to use now instead of a dialog's. Inline content — no
  *  Dialog chrome — meant to sit inside a Dashboard tab.
  *
  *  Bounded like Kairos' `BoardColumn`: header (title + button) lives inside
  *  one card boundary instead of floating loose above a bare list, and the
- *  list itself caps at roughly two cards tall with its own scroll — past
- *  goal counts don't push the rest of the dashboard down. */
+ *  whole list caps its own height with a scroll — past goal counts don't
+ *  push the rest of the dashboard down. Each card shows every item (not a
+ *  truncated preview) since the outer scroll already absorbs the height. */
 export default function GoalsPanel() {
-  const { data } = useLedger();
+  const { data, updateGoalItem } = useLedger();
   const money = useMoneyFormat();
   const fmt = useDateFormat();
   const t = useT();
@@ -50,15 +49,15 @@ export default function GoalsPanel() {
           {active.map((goal) => {
             const progress = goalProgress(data, goal.id);
             const pct = goal.targetCents > 0 ? Math.min(100, progress?.progressPct ?? 0) : 0;
-            const previewItems = goal.items.slice(0, ITEM_PREVIEW_COUNT);
-            const remaining = goal.items.length - previewItems.length;
             return (
-              <button
+              <div
                 key={goal.id}
-                type="button"
+                role="button"
+                tabIndex={0}
                 onClick={() => setDetail(goal)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDetail(goal); } }}
                 style={{ background: `${goal.color}10`, borderColor: `${goal.color}40` }}
-                className="pluto-card relative p-3 pl-5 text-left transition-shadow hover:shadow-elevated"
+                className="pluto-card relative cursor-pointer p-3 pl-5 text-left transition-shadow hover:shadow-elevated"
               >
                 <span className="absolute bottom-1.5 left-1.5 top-1.5 w-[3px] rounded-full" style={{ background: goal.color }} />
                 <div className="flex items-center justify-between gap-2">
@@ -79,30 +78,32 @@ export default function GoalsPanel() {
                 </div>
                 {/* Always render this footer, checklist or not — a goal without items used to
                     just skip the block, leaving its card shorter than its siblings in the same
-                    grid row. A one-line fallback keeps every card the same shape. */}
+                    grid row. A one-line fallback keeps every card the same shape. Checkboxes are
+                    real buttons here (stopPropagation so they don't also open the detail dialog) —
+                    they used to just look like the real toggle inside the dialog without acting
+                    like one. */}
                 <div className="mt-2 space-y-1 border-t border-border/60 pt-2">
-                  {previewItems.length > 0 ? (
-                    <>
-                      {previewItems.map((item) => (
-                        <div key={item.id} className="flex items-center gap-1.5 text-xs">
-                          <span
-                            className={cn(
-                              "grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border",
-                              item.done ? "border-secondary bg-secondary text-primary-deep" : "border-border",
-                            )}
-                          >
-                            {item.done && <Check className="h-2 w-2" />}
-                          </span>
-                          <span className={cn("truncate", item.done ? "text-muted-foreground line-through" : "text-card-foreground")}>{item.name}</span>
-                        </div>
-                      ))}
-                      {remaining > 0 && <div className="pl-5 text-[11px] text-muted-foreground">+{remaining}</div>}
-                    </>
+                  {goal.items.length > 0 ? (
+                    goal.items.map((item) => (
+                      <div key={item.id} className="flex items-center gap-1.5 text-xs">
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); updateGoalItem(goal.id, item.id, { done: !item.done }); }}
+                          className={cn(
+                            "grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border",
+                            item.done ? "border-secondary bg-secondary text-primary-deep" : "border-border hover:border-secondary",
+                          )}
+                        >
+                          {item.done && <Check className="h-2 w-2" />}
+                        </button>
+                        <span className={cn("truncate", item.done ? "text-muted-foreground line-through" : "text-card-foreground")}>{item.name}</span>
+                      </div>
+                    ))
                   ) : (
                     <div className="text-[11px] text-muted-foreground/70">{L.noItems}</div>
                   )}
                 </div>
-              </button>
+              </div>
             );
           })}
         </div>

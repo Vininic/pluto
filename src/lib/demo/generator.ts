@@ -90,7 +90,7 @@ export function generateDemoData(): LedgerData {
   data = withPcGoal;
   data = addGoalItem(data, pcGoal, { name: "Placa de vídeo", priceCents: 350000 }).data;
   data = addGoalItem(data, pcGoal, { name: "Processador", priceCents: 180000 }).data;
-  data = addGoalItem(data, pcGoal, { name: "Memória RAM", priceCents: 60000, url: "https://example.com" }).data;
+  data = addGoalItem(data, pcGoal, { name: "Memória RAM", priceCents: 60000 }).data;
   data = setGoalTargetFromItems(data, pcGoal);
   data = addContribution(data, pcGoal, { amountCents: 300000, date: monthsAgo(1, 5), walletId: xp }).data;
   data = addContribution(data, pcGoal, { amountCents: 100000, date: monthsAgo(0, 2), walletId: xp }).data;

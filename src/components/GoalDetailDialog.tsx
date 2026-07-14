@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "@/components/ui/sonner";
 import { estimateItemPriceCents } from "@/lib/ai/priceEstimate";
 import { goalProgress } from "@/lib/ledger/service";
 import { useLedger } from "@/lib/ledger/store";
@@ -61,7 +62,11 @@ export default function GoalDetailDialog({ open, onOpenChange, goal }: GoalDetai
       if (cents !== null) {
         setItemPrice((cents / 100).toFixed(2).replace(".", ","));
         setAiEstimated(true);
+      } else {
+        toast(L.aiEstimateFailed);
       }
+    } catch (err) {
+      toast(L.aiEstimateFailed, { description: err instanceof Error ? err.message : undefined });
     } finally {
       setEstimatingNewItem(false);
     }
@@ -87,7 +92,11 @@ export default function GoalDetailDialog({ open, onOpenChange, goal }: GoalDetai
       if (cents !== null) {
         setEditingItemId(itemId);
         setEditingPriceDraft((cents / 100).toFixed(2).replace(".", ","));
+      } else {
+        toast(L.aiEstimateFailed);
       }
+    } catch (err) {
+      toast(L.aiEstimateFailed, { description: err instanceof Error ? err.message : undefined });
     } finally {
       setEstimatingItemId(null);
     }
@@ -105,13 +114,17 @@ export default function GoalDetailDialog({ open, onOpenChange, goal }: GoalDetai
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
-            <div className="flex items-center gap-2">
-              <span className="h-3 w-3 rounded-full" style={{ background: goal.color }} />
-              <DialogTitle className="font-display text-xl">{goal.name}</DialogTitle>
-              <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground" onClick={() => setEditOpen(true)}>
+            {/* pr-7 keeps the delete button clear of the Dialog's own built-in
+                close X (absolute, right-4 top-4) — without it the two
+                right-aligned controls sat close enough to visually overlap
+                on narrow (mobile) dialogs. */}
+            <div className="flex items-center gap-2 pr-7">
+              <span className="h-3 w-3 shrink-0 rounded-full" style={{ background: goal.color }} />
+              <DialogTitle className="min-w-0 flex-1 truncate font-display text-xl">{goal.name}</DialogTitle>
+              <Button size="icon" variant="ghost" className="h-7 w-7 shrink-0 text-muted-foreground" onClick={() => setEditOpen(true)}>
                 <Pencil className="h-3.5 w-3.5" />
               </Button>
-              <Button size="icon" variant="ghost" className="ml-auto h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => { deleteGoal(goal.id); onOpenChange(false); }}>
+              <Button size="icon" variant="ghost" className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => { deleteGoal(goal.id); onOpenChange(false); }}>
                 <Trash2 className="h-3.5 w-3.5" />
               </Button>
             </div>
