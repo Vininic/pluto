@@ -36,8 +36,7 @@ export default function Wallets() {
     <div className="mx-auto w-full max-w-5xl space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.22em] text-secondary">{L.eyebrow}</div>
-          <h1 className="font-display mt-1.5 text-4xl text-primary">{L.title}</h1>
+          <h1 className="font-display text-4xl text-primary">{L.title}</h1>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setTransferOpen(true)} disabled={data.wallets.length < 2}>

@@ -20,8 +20,7 @@ export default function About() {
   return (
     <div className="mx-auto w-full max-w-5xl">
       <header className="mb-7">
-        <div className="text-[11px] uppercase tracking-[0.22em] text-secondary">{L.eyebrow}</div>
-        <h1 className="font-display mt-1.5 text-4xl text-primary">{L.title}</h1>
+        <h1 className="font-display text-4xl text-primary">{L.title}</h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{L.lead}</p>
       </header>
 

@@ -40,8 +40,7 @@ export default function Dashboard() {
   return (
     <div className="mx-auto w-full max-w-[1600px] space-y-3">
       <header>
-        <div className="text-[11px] uppercase tracking-[0.22em] text-secondary">{L.eyebrow}</div>
-        <h1 className="font-display mt-1 text-3xl text-primary">{L.title}</h1>
+        <h1 className="font-display text-3xl text-primary">{L.title}</h1>
       </header>
 
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-5">

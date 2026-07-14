@@ -60,7 +60,6 @@ const pt = {
     },
     walletTypes: { cash: "Dinheiro", checking: "Conta corrente", savings: "Poupança", credit: "Cartão de crédito", crypto: "Cripto" },
     wallets: {
-      eyebrow: "Carteiras",
       title: "Suas carteiras",
       newWallet: "Nova carteira",
       editWallet: "Editar carteira",
@@ -96,7 +95,6 @@ const pt = {
       expense: "Despesa",
     },
     transactions: {
-      eyebrow: "Transações",
       title: "Transações",
       newTransaction: "Novo lançamento",
       editTransaction: "Editar lançamento",
@@ -192,7 +190,6 @@ const pt = {
       itemsChip: (done: number, total: number) => `${done}/${total} itens`,
     },
     dashboard: {
-      eyebrow: "Painel",
       title: "Painel financeiro",
       netBalance: "Saldo do mês",
       income: "Receitas",
@@ -281,7 +278,6 @@ const pt = {
       accountExists: "Já existe uma conta com esse e-mail — use Entrar.",
     },
     about: {
-      eyebrow: "Sobre",
       title: "Sobre o Pluto",
       lead: "O pilar financeiro da Suíte Olympus — carteiras, orçamentos e metas, com uma leitura honesta do que entra e do que sai.",
       projectEyebrow: "O projeto",
@@ -312,7 +308,6 @@ const pt = {
       backToApp: "Voltar ao painel",
     },
     settings: {
-      eyebrow: "Configurações",
       title: "Configurações",
       appearanceEyebrow: "Aparência",
       appearanceTitle: "Tema",
@@ -446,7 +441,6 @@ const pt = {
       reviewUncategorized: "Revisar sem categoria",
     },
     reports: {
-      eyebrow: "Relatórios",
       title: "Relatórios",
       month: "Mês",
       generate: "Gerar relatório",
@@ -543,7 +537,6 @@ const en: typeof pt = {
     },
     walletTypes: { cash: "Cash", checking: "Checking", savings: "Savings", credit: "Credit card", crypto: "Crypto" },
     wallets: {
-      eyebrow: "Wallets",
       title: "Your wallets",
       newWallet: "New wallet",
       editWallet: "Edit wallet",
@@ -579,7 +572,6 @@ const en: typeof pt = {
       expense: "Expense",
     },
     transactions: {
-      eyebrow: "Transactions",
       title: "Transactions",
       newTransaction: "New transaction",
       editTransaction: "Edit transaction",
@@ -675,7 +667,6 @@ const en: typeof pt = {
       itemsChip: (done: number, total: number) => `${done}/${total} items`,
     },
     dashboard: {
-      eyebrow: "Dashboard",
       title: "Financial dashboard",
       netBalance: "Month net",
       income: "Income",
@@ -764,7 +755,6 @@ const en: typeof pt = {
       accountExists: "An account with this email already exists — use Sign in.",
     },
     about: {
-      eyebrow: "About",
       title: "About Pluto",
       lead: "The financial pillar of the Olympus Suite — wallets, budgets and goals, with an honest read of what comes in and what goes out.",
       projectEyebrow: "The project",
@@ -795,7 +785,6 @@ const en: typeof pt = {
       backToApp: "Back to dashboard",
     },
     settings: {
-      eyebrow: "Settings",
       title: "Settings",
       appearanceEyebrow: "Appearance",
       appearanceTitle: "Theme",
@@ -929,7 +918,6 @@ const en: typeof pt = {
       reviewUncategorized: "Review uncategorized",
     },
     reports: {
-      eyebrow: "Reports",
       title: "Reports",
       month: "Month",
       generate: "Generate report",
