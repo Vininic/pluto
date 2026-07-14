@@ -67,16 +67,19 @@ export default function Dashboard() {
       {tab === "overview" && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-            <section className="pluto-card-elevated p-6">
-              <div className="text-[11px] uppercase tracking-[0.22em] text-secondary">{L.netBalance}</div>
-              <div className={cn("font-display num mt-1 text-4xl", summary.netCents >= 0 ? "text-primary" : "text-destructive")}>
-                {money.format(summary.netCents)}
-              </div>
-              <div className="num mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm">
-                <span className="text-emerald-600 dark:text-emerald-400">{L.income}: {money.format(summary.incomeCents)}</span>
-                <span className="text-destructive">{L.expense}: {money.format(summary.expenseCents)}</span>
-              </div>
-            </section>
+            <div className="flex flex-col gap-4">
+              <section className="pluto-card-elevated p-6">
+                <div className="text-[11px] uppercase tracking-[0.22em] text-secondary">{L.netBalance}</div>
+                <div className={cn("font-display num mt-1 text-4xl", summary.netCents >= 0 ? "text-primary" : "text-destructive")}>
+                  {money.format(summary.netCents)}
+                </div>
+                <div className="num mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm">
+                  <span className="text-emerald-600 dark:text-emerald-400">{L.income}: {money.format(summary.incomeCents)}</span>
+                  <span className="text-destructive">{L.expense}: {money.format(summary.expenseCents)}</span>
+                </div>
+              </section>
+              <AetherisInsightCard month={month} />
+            </div>
 
             <section className="pluto-card p-5 lg:col-span-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -84,47 +87,45 @@ export default function Dashboard() {
                 <MonthStepper month={month} onChange={setMonth} />
               </div>
               <EvolutionChart points={evolutionPoints} />
-            </section>
-          </div>
 
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-            <AetherisInsightCard month={month} />
-
-            <section className="pluto-card p-5">
-              <h2 className="font-display text-lg text-primary">{L.topExpenses}</h2>
-              {top5.length === 0 ? (
-                <p className="mt-3 text-sm text-muted-foreground">{L.noData}</p>
-              ) : (
-                <div className="mt-3">
-                  <TopExpensesChart items={top5} categoryName={categoryName} categoryColor={categoryColor} />
+              <div className="mt-5 grid grid-cols-1 gap-4 border-t border-border pt-5 sm:grid-cols-2">
+                <div>
+                  <h3 className="font-display text-sm text-primary">{L.topExpenses}</h3>
+                  {top5.length === 0 ? (
+                    <p className="mt-2 text-sm text-muted-foreground">{L.noData}</p>
+                  ) : (
+                    <div className="mt-2">
+                      <TopExpensesChart items={top5} categoryName={categoryName} categoryColor={categoryColor} />
+                    </div>
+                  )}
                 </div>
-              )}
-            </section>
 
-            <section className="pluto-card p-5">
-              <div className="flex items-center justify-between">
-                <h2 className="font-display text-lg text-primary">{L.recentTransactions}</h2>
-                <Link to="/transactions" className="text-xs text-secondary hover:underline">{L.viewAll}</Link>
+                <div>
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-display text-sm text-primary">{L.recentTransactions}</h3>
+                    <Link to="/transactions" className="text-xs text-secondary hover:underline">{L.viewAll}</Link>
+                  </div>
+                  {recent.length === 0 ? (
+                    <p className="mt-2 text-sm text-muted-foreground">{L.noData}</p>
+                  ) : (
+                    <div className="mt-2 space-y-1">
+                      {recent.map((tx) => {
+                        const Icon = TYPE_ICON[tx.type];
+                        const signed = tx.type === "income" ? tx.amountCents : tx.type === "expense" ? -tx.amountCents : 0;
+                        return (
+                          <div key={tx.id} className="flex items-center gap-2 py-1 text-sm">
+                            <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                            <span className="flex-1 truncate text-card-foreground">{tx.description || t.pluto.transactions.uncategorized}</span>
+                            <span className={cn("num shrink-0", signed > 0 ? "text-emerald-600 dark:text-emerald-400" : signed < 0 ? "text-destructive" : "text-muted-foreground")}>
+                              {signed === 0 ? money.format(tx.amountCents) : money.format(signed)}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
-              {recent.length === 0 ? (
-                <p className="mt-3 text-sm text-muted-foreground">{L.noData}</p>
-              ) : (
-                <div className="mt-3 space-y-1">
-                  {recent.map((tx) => {
-                    const Icon = TYPE_ICON[tx.type];
-                    const signed = tx.type === "income" ? tx.amountCents : tx.type === "expense" ? -tx.amountCents : 0;
-                    return (
-                      <div key={tx.id} className="flex items-center gap-2 py-1 text-sm">
-                        <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                        <span className="flex-1 truncate text-card-foreground">{tx.description || t.pluto.transactions.uncategorized}</span>
-                        <span className={cn("num shrink-0", signed > 0 ? "text-emerald-600 dark:text-emerald-400" : signed < 0 ? "text-destructive" : "text-muted-foreground")}>
-                          {signed === 0 ? money.format(tx.amountCents) : money.format(signed)}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
             </section>
           </div>
         </div>

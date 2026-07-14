@@ -67,24 +67,31 @@ export default function GoalsPanel() {
                   <span>{money.format(progress?.contributedCents ?? 0)} / {money.format(goal.targetCents)}</span>
                   {goal.deadline && <span>{fmt.short(goal.deadline)}</span>}
                 </div>
-                {previewItems.length > 0 && (
-                  <div className="mt-3 space-y-1 border-t border-border/60 pt-2.5">
-                    {previewItems.map((item) => (
-                      <div key={item.id} className="flex items-center gap-1.5 text-xs">
-                        <span
-                          className={cn(
-                            "grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border",
-                            item.done ? "border-secondary bg-secondary text-primary-deep" : "border-border",
-                          )}
-                        >
-                          {item.done && <Check className="h-2 w-2" />}
-                        </span>
-                        <span className={cn("truncate", item.done ? "text-muted-foreground line-through" : "text-card-foreground")}>{item.name}</span>
-                      </div>
-                    ))}
-                    {remaining > 0 && <div className="pl-5 text-[11px] text-muted-foreground">+{remaining}</div>}
-                  </div>
-                )}
+                {/* Always render this footer, checklist or not — a goal without items used to
+                    just skip the block, leaving its card shorter than its siblings in the same
+                    grid row. A one-line fallback keeps every card the same shape. */}
+                <div className="mt-3 space-y-1 border-t border-border/60 pt-2.5">
+                  {previewItems.length > 0 ? (
+                    <>
+                      {previewItems.map((item) => (
+                        <div key={item.id} className="flex items-center gap-1.5 text-xs">
+                          <span
+                            className={cn(
+                              "grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border",
+                              item.done ? "border-secondary bg-secondary text-primary-deep" : "border-border",
+                            )}
+                          >
+                            {item.done && <Check className="h-2 w-2" />}
+                          </span>
+                          <span className={cn("truncate", item.done ? "text-muted-foreground line-through" : "text-card-foreground")}>{item.name}</span>
+                        </div>
+                      ))}
+                      {remaining > 0 && <div className="pl-5 text-[11px] text-muted-foreground">+{remaining}</div>}
+                    </>
+                  ) : (
+                    <div className="text-[11px] text-muted-foreground/70">{L.noItems}</div>
+                  )}
+                </div>
               </button>
             );
           })}

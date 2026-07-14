@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type DragEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { useLedger } from "@/lib/ledger/store";
 import type { Category } from "@/lib/ledger/types";
@@ -11,9 +11,21 @@ interface BudgetRowProps {
   limitCents: number;
   spentCents: number;
   overBudget: boolean;
+  /** Count of transactions already filed under this category. */
+  txCount?: number;
+  /** Drag-and-drop target for categorizing an inbox transaction — same card now
+   *  does both jobs (budget status + triage) instead of switching between two
+   *  visually unrelated views for the same category list. */
+  isDropTarget?: boolean;
+  onDragOver?: () => void;
+  onDragLeave?: () => void;
+  onDrop?: () => void;
 }
 
-export default function BudgetRow({ category, limitCents, spentCents, overBudget }: BudgetRowProps) {
+export default function BudgetRow({
+  category, limitCents, spentCents, overBudget,
+  txCount, isDropTarget, onDragOver, onDragLeave, onDrop,
+}: BudgetRowProps) {
   const { setBudget } = useLedger();
   const money = useMoneyFormat();
   const t = useT();
@@ -28,13 +40,25 @@ export default function BudgetRow({ category, limitCents, spentCents, overBudget
   }
 
   const pct = limitCents > 0 ? Math.min(100, Math.round((spentCents / limitCents) * 100)) : 0;
+  const dropHandlers = onDrop ? {
+    onDragOver: (e: DragEvent) => { e.preventDefault(); onDragOver?.(); },
+    onDragLeave: () => onDragLeave?.(),
+    onDrop: (e: DragEvent) => { e.preventDefault(); onDrop(); },
+  } : undefined;
 
   return (
-    <div className="pluto-card p-4">
+    <div
+      {...dropHandlers}
+      className={cn(
+        "pluto-card p-4 transition-colors",
+        isDropTarget && "border-secondary bg-secondary/10 ring-1 ring-secondary/40",
+      )}
+    >
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2">
           <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: category.color }} />
           <span className="truncate font-medium text-primary">{category.name}</span>
+          {typeof txCount === "number" && <span className="num shrink-0 text-[11px] text-muted-foreground/70">({txCount})</span>}
         </div>
         {editing ? (
           <Input
