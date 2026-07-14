@@ -50,7 +50,7 @@ export default function CategoriesPanel() {
   }
 
   return (
-    <section className="flex flex-col overflow-hidden rounded-xl border border-border/70 bg-surface-veil/40">
+    <section className="flex flex-col overflow-hidden rounded-xl border border-border/70 bg-surface-veil/40 xl:h-full">
       <header className="flex shrink-0 items-center gap-2 px-3.5 pb-2 pt-3">
         <PiggyBank className="h-4 w-4 text-secondary" />
         <h2 className="font-display text-lg text-primary">{t.pluto.dashboard.tabCategories}</h2>
@@ -63,8 +63,13 @@ export default function CategoriesPanel() {
       {categories.length === 0 ? (
         <p className="p-8 text-center text-sm text-muted-foreground">{LT.noCategoriesYet}</p>
       ) : (
-        <div className="flex min-h-0 flex-col gap-3 p-2.5 lg:flex-row">
-          <div className="flex max-h-[420px] w-full shrink-0 flex-col overflow-hidden rounded-lg border border-border/60 lg:w-64">
+        <div className="flex min-h-0 flex-col gap-3 p-2.5 xl:flex-1 xl:flex-row">
+          {/* max-h caps stand alone on mobile/tablet (page scrolls normally
+              there); at xl:, xl:max-h-none + xl:flex-1 let both this and the
+              category list stretch to fill whatever height the dashboard's
+              two-column grid gives this panel, so its bottom lands exactly
+              where the grid row ends — not at a hand-picked pixel value. */}
+          <div className="flex max-h-[420px] w-full shrink-0 flex-col overflow-hidden rounded-lg border border-border/60 xl:max-h-none xl:w-64">
             <header className="flex shrink-0 items-center gap-1.5 px-2.5 pb-1 pt-2">
               <InboxIcon className="h-3.5 w-3.5 text-secondary" />
               <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">{LT.inbox}</h3>
@@ -98,7 +103,11 @@ export default function CategoriesPanel() {
             </div>
           </div>
 
-          <div className="flex max-h-[420px] min-w-0 flex-1 flex-col gap-2 overflow-y-auto pr-1">
+          {/* @container: BudgetRow's name/amount layout reacts to this div's
+              actual rendered width via @sm: variants, not the viewport's —
+              at viewport widths like 1366px this column is narrower than a
+              plain `sm:` breakpoint assumes, which was truncating names. */}
+          <div className="@container flex max-h-[420px] min-w-0 flex-1 flex-col gap-2 overflow-y-auto pr-1 xl:max-h-none">
             {expenseCategories.map((category) => {
               const status = statusByCategory.get(category.id);
               return (

@@ -43,9 +43,9 @@ export default function Dashboard() {
         <h1 className="font-display text-3xl text-primary">{L.title}</h1>
       </header>
 
-      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-5">
+      <div className="grid grid-cols-1 items-stretch gap-4 xl:grid-cols-5">
         {/* Left column — stats + goals */}
-        <div className="flex flex-col gap-3 lg:col-span-2">
+        <div className="flex flex-col gap-3 xl:col-span-2 xl:min-h-0">
           <section className="pluto-card-elevated p-3">
             <div className="text-[11px] uppercase tracking-[0.22em] text-secondary">{L.netBalance}</div>
             <div className={cn("font-display num mt-1 text-4xl", summary.netCents >= 0 ? "text-primary" : "text-destructive")}>
@@ -61,11 +61,13 @@ export default function Dashboard() {
 
           {/* Lives here (not in the Evolution card) so the two columns' total
               height stays reasonably balanced — the chart + categories side
-              was running much taller than stats + goals alone. Bounded like
-              GoalsPanel/CategoriesPanel so its own bottom lines up with
-              Categories' bottom on the right, instead of ending wherever the
-              transaction count happens to land. */}
-          <section className="flex max-h-[456px] flex-col overflow-hidden rounded-xl border border-border/70 bg-surface-veil/40">
+              was running much taller than stats + goals alone. xl:flex-1 +
+              xl:min-h-0 make this the column's "filler": it stretches to
+              whatever height the grid row ends up needing (driven by
+              whichever column is naturally taller) and scrolls internally,
+              so its bottom always lands exactly on Categories' bottom
+              instead of needing a hand-tuned item count. */}
+          <section className="flex max-h-[456px] flex-col overflow-hidden rounded-xl border border-border/70 bg-surface-veil/40 xl:max-h-none xl:flex-1 xl:min-h-0">
             <header className="flex shrink-0 items-center gap-2 px-3.5 pb-2 pt-3">
               <Receipt className="h-4 w-4 text-secondary" />
               <h2 className="font-display text-lg text-primary">{L.recentTransactions}</h2>
@@ -75,7 +77,7 @@ export default function Dashboard() {
             {recent.length === 0 ? (
               <p className="p-8 text-center text-sm text-muted-foreground">{L.noData}</p>
             ) : (
-              <div className="overflow-y-auto p-2.5">
+              <div className="overflow-y-auto p-2.5 xl:min-h-0 xl:flex-1">
                 {recent.map((tx) => {
                   const Icon = TYPE_ICON[tx.type];
                   const signed = tx.type === "income" ? tx.amountCents : tx.type === "expense" ? -tx.amountCents : 0;
@@ -95,8 +97,8 @@ export default function Dashboard() {
         </div>
 
         {/* Right column — evolution chart + categories */}
-        <div className="flex flex-col gap-3 lg:col-span-3">
-          <section className="pluto-card p-4">
+        <div className="flex flex-col gap-3 xl:col-span-3 xl:min-h-0">
+          <section className="pluto-card p-4 xl:shrink-0">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-display text-lg text-primary">{L.evolution}</h2>
               <MonthStepper month={month} onChange={setMonth} />
@@ -115,7 +117,9 @@ export default function Dashboard() {
             </div>
           </section>
 
-          <CategoriesPanel />
+          <div className="xl:min-h-0 xl:flex-1">
+            <CategoriesPanel />
+          </div>
         </div>
       </div>
     </div>

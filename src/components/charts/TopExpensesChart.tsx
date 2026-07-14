@@ -13,11 +13,15 @@ export default function TopExpensesChart({ items, categoryName, categoryColor }:
   const data = items.map((i) => ({ name: categoryName(i.categoryId), value: i.expenseCents, color: categoryColor(i.categoryId) }));
 
   return (
-    <div style={{ height: Math.max(80, data.length * 20) }} className="w-full">
+    <div style={{ height: Math.max(100, data.length * 28) }} className="w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} layout="vertical" margin={{ top: 0, right: 12, left: 0, bottom: 0 }}>
           <XAxis type="number" hide />
-          <YAxis type="category" dataKey="name" width={96} tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+          {/* interval={0} forces every label to render — at the tighter row
+              heights this dashboard uses, Recharts' default auto-skip was
+              silently dropping labels it judged might overlap, so the chart
+              showed 5 bars but only 3 category names. */}
+          <YAxis type="category" dataKey="name" width={96} tickLine={false} axisLine={false} interval={0} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
           <Tooltip
             cursor={{ fill: "hsl(var(--muted))" }}
             contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}

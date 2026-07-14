@@ -51,7 +51,7 @@ export default function BudgetRow({
       {...dropHandlers}
       style={isDropTarget ? undefined : { background: `${category.color}10`, borderColor: `${category.color}40` }}
       className={cn(
-        "pluto-card relative flex flex-col gap-1.5 py-1.5 pl-5 pr-3.5 transition-colors sm:flex-row sm:items-center sm:gap-3",
+        "pluto-card relative flex flex-col gap-1.5 py-1.5 pl-5 pr-3.5 transition-colors @[440px]:flex-row @[440px]:items-center @[440px]:gap-3",
         isDropTarget && "border-secondary bg-secondary/10 ring-1 ring-secondary/40",
       )}
     >
@@ -61,12 +61,17 @@ export default function BudgetRow({
         {typeof txCount === "number" && <span className="num shrink-0 text-[11px] text-muted-foreground/70">({txCount})</span>}
       </div>
 
-      {/* Amount lives on its own row below `sm` — the combined "spent / limit"
-          string is wide enough that squeezing it onto the name's line at
-          phone widths pushed the name back into truncating. */}
+      {/* Amount lives on its own row until the card's own rendered width
+          (not the viewport's — see the @container on the parent list in
+          CategoriesPanel) reaches 440px. The combined "spent / limit" string
+          is wide enough that squeezing it onto the name's line in a narrower
+          card pushed the name back into truncating — happened both on phone
+          viewports and, before this was container-based, on real desktop
+          widths (1366px) where this panel's own column is narrower than a
+          plain `sm:` breakpoint assumes. */}
       <div className="flex shrink-0 items-center justify-end gap-3">
         {limitCents > 0 && (
-          <div className="hidden h-1.5 w-16 shrink-0 overflow-hidden rounded-full bg-muted sm:block">
+          <div className="hidden h-1.5 w-16 shrink-0 overflow-hidden rounded-full bg-muted @[440px]:block">
             <div className="h-full rounded-full" style={{ width: `${pct}%`, background: overBudget ? "hsl(var(--destructive))" : category.color }} />
           </div>
         )}
