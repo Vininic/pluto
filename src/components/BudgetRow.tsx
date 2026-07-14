@@ -54,12 +54,15 @@ export default function BudgetRow({
         isDropTarget && "border-secondary bg-secondary/10 ring-1 ring-secondary/40",
       )}
     >
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-2">
-          <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: category.color }} />
-          <span className="truncate font-medium text-primary">{category.name}</span>
-          {typeof txCount === "number" && <span className="num shrink-0 text-[11px] text-muted-foreground/70">({txCount})</span>}
-        </div>
+      <div className="flex min-w-0 items-center gap-2">
+        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: category.color }} />
+        <span className="min-w-0 flex-1 truncate font-medium text-primary">{category.name}</span>
+        {typeof txCount === "number" && <span className="num shrink-0 text-[11px] text-muted-foreground/70">({txCount})</span>}
+      </div>
+      {/* Amount/edit-limit lives on its own row, not squeezed onto the name's line —
+          in a narrow 2-column card, a long category name and "Sem limite definido"
+          were fighting for the same line and losing the name to truncation. */}
+      <div className="mt-1.5 flex justify-end">
         {editing ? (
           <Input
             autoFocus

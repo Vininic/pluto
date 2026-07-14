@@ -93,7 +93,7 @@ export default function CategoriesPanel() {
             </div>
           </section>
 
-          <div className="grid min-w-0 flex-1 grid-cols-1 gap-3">
+          <div className="grid min-w-0 flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
             {expenseCategories.map((category) => {
               const status = statusByCategory.get(category.id);
               return (
