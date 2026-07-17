@@ -17,7 +17,7 @@ export default function Landing() {
     { n: "Chronos", live: true, href: CHRONOS_URL },
     { n: "Kairos", live: true, href: "https://kairos-suite.vercel.app" },
     { n: "Pluto", live: true, href: "/dashboard" },
-    { n: "Hermes", live: true, href: "https://hermes-seven-delta.vercel.app" },
+    { n: "Hermes", live: true, href: "https://hermes-suite.vercel.app" },
   ].map((app, i) => ({ ...app, r: L.suiteApps[i].role, d: L.suiteApps[i].desc }));
 
   return (
