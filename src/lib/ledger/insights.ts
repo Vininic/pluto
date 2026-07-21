@@ -1,6 +1,11 @@
-/** Deterministic, no-AI insight for the Dashboard's Aetheris card — same
- *  "heuristics-first, AI-second" pattern as Chronos' digests: compute the
- *  aggregate locally, let the model only narrate when the user actually asks.
+/** Deterministic, no-AI insight for the Dashboard's Aetheris card — the
+ *  fallback shown instantly and swapped out if lib/ai/insight.ts's AI
+ *  attempt resolves with something. This function itself never calls AI;
+ *  see AetherisInsightCard.tsx for the "paint this immediately, upgrade in
+ *  the background" wiring. (Previously documented as mirroring Chronos'
+ *  digest pattern, but Chronos' lib/digest/generator.ts actually tries AI
+ *  first and only falls back to heuristics — this file used to be the
+ *  opposite of that despite the comment, which is what this now matches.)
  *  Priority-ordered: the first check that fires wins. */
 import { budgetStatus, goalProgress, monthSummary, shiftMonth } from "./service";
 import type { LedgerData } from "./types";

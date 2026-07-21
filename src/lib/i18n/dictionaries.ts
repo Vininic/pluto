@@ -220,6 +220,8 @@ const pt = {
       netImprovedBody: "Continue assim.",
       allClearTitle: "Tudo em ordem",
       allClearBody: "Nenhum alerta este mês — orçamentos e metas no caminho certo.",
+      aiBadge: "IA",
+      heuristicBadge: "Estrutural",
     },
     landing: {
       navSystem: "O sistema",
@@ -700,6 +702,8 @@ const en: typeof pt = {
       netImprovedBody: "Keep it up.",
       allClearTitle: "All clear",
       allClearBody: "No alerts this month — budgets and goals are on track.",
+      aiBadge: "AI",
+      heuristicBadge: "Structural",
     },
     landing: {
       navSystem: "The system",

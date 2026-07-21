@@ -25,7 +25,7 @@ import { streamChat, type ChatMessage } from "@/lib/ai/providers";
 import { isConfigured, loadAiSettings, modelOf, saveAiSettings, PROVIDER_LABELS, type AiSettings } from "@/lib/ai/settings";
 import { generateDigest } from "@/lib/digest/generator";
 import { getDigest, setDigest } from "@/lib/digest/store";
-import { CARD_SEVERITY, type Digest, type ReportCard } from "@/lib/digest/types";
+import { cardSeverity, type Digest, type ReportCard } from "@/lib/digest/types";
 import { budgetStatus, currentYYYYMM, goalProgress, walletBalance } from "@/lib/ledger/service";
 import { useLedger } from "@/lib/ledger/store";
 import type { LedgerData } from "@/lib/ledger/types";
@@ -76,11 +76,16 @@ export default function Aetheris() {
   }, [activeSession?.messages, streamingText]);
 
   useEffect(() => {
-    if (!getDigest()) {
-      const fresh = generateDigest(dataRef.current, currentYYYYMM());
+    if (getDigest()) return;
+    let cancelled = false;
+    generateDigest(dataRef.current, currentYYYYMM(), locale).then((fresh) => {
+      if (cancelled) return;
       setDigest(fresh);
       setDigestState(fresh);
-    }
+    });
+    return () => {
+      cancelled = true;
+    };
     // First-visit only — after that the user refreshes explicitly via the tab's button.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -131,9 +136,9 @@ export default function Aetheris() {
     });
   }
 
-  function generateDigestNow() {
+  async function generateDigestNow() {
     setDigestGenerating(true);
-    const next = generateDigest(dataRef.current, currentYYYYMM());
+    const next = await generateDigest(dataRef.current, currentYYYYMM(), locale);
     setDigest(next);
     setDigestState(next);
     setDigestGenerating(false);
@@ -163,6 +168,8 @@ export default function Aetheris() {
         return { title: L.digestNetNegativeTitle, body: L.digestNetNegativeBody(money.format(Math.abs(card.amountCents))) };
       case "allClear":
         return { title: L.digestAllClearTitle, body: L.digestAllClearBody };
+      case "ai":
+        return { title: card.title, body: card.body };
     }
   }
 
@@ -617,12 +624,22 @@ export default function Aetheris() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 {digest ? (
-                  <span className="num text-[9px] text-muted-foreground/50">
-                    {L.digestGeneratedAt(new Intl.DateTimeFormat(bcp47, { dateStyle: "short", timeStyle: "short" }).format(new Date(digest.generatedAt)))}
+                  <span className="flex items-center gap-1.5 text-[9px] text-muted-foreground/50">
+                    <span className="num">
+                      {L.digestGeneratedAt(new Intl.DateTimeFormat(bcp47, { dateStyle: "short", timeStyle: "short" }).format(new Date(digest.generatedAt)))}
+                    </span>
+                    <span
+                      className={cn(
+                        "rounded-full px-1.5 py-0.5 font-medium uppercase tracking-wider",
+                        digest.generatedBy === "ai" ? "bg-secondary/15 text-secondary" : "bg-muted-foreground/10 text-muted-foreground/60",
+                      )}
+                    >
+                      {digest.generatedBy === "ai" ? t.pluto.insights.aiBadge : t.pluto.insights.heuristicBadge}
+                    </span>
                   </span>
                 ) : <span />}
                 <button
-                  onClick={generateDigestNow}
+                  onClick={() => void generateDigestNow()}
                   disabled={digestGenerating}
                   className="flex items-center gap-1 text-[10px] font-medium text-secondary hover:underline disabled:opacity-50"
                 >
@@ -632,7 +649,7 @@ export default function Aetheris() {
 
               {digest?.cards.map((card, i) => {
                 const { title, body } = digestCardText(card);
-                const severity = CARD_SEVERITY[card.kind];
+                const severity = cardSeverity(card);
                 const Icon = severity === "warning" ? AlertTriangle : severity === "positive" ? CheckCircle2 : Newspaper;
                 return (
                   <div key={i} className="pluto-card p-3">

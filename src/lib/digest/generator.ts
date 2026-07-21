@@ -1,13 +1,15 @@
-/** The fuller "what's going on" digest for Aetheris — a superset of the
- *  single-headline `heuristicInsight()` used on the Dashboard card. Same
- *  rule: everything here is computed locally, zero AI calls. Mirrors
- *  Chronos'/Kairos' `lib/digest/generator.ts` shape (a card list with a
- *  severity, regenerated on demand rather than kept live). */
+/** The fuller "what's going on" digest for Aetheris — tries the AI insight
+ *  pass (lib/ai/insight.ts) first and falls back to the deterministic
+ *  modules below when it's unavailable, fails, or returns nothing usable.
+ *  Same AI-first, heuristic-fallback shape as Chronos'/Kairos'
+ *  lib/digest/generator.ts. */
 import { budgetStatus, goalProgress, monthSummary, shiftMonth } from "@/lib/ledger/service";
 import type { LedgerData } from "@/lib/ledger/types";
+import { aiDigestCards } from "@/lib/ai/insight";
+import { LOCALE_LABELS, type Locale } from "@/lib/i18n/dictionaries";
 import type { Digest, ReportCard } from "./types";
 
-export function generateDigest(data: LedgerData, month: string): Digest {
+function heuristicCards(data: LedgerData, month: string): ReportCard[] {
   const cards: ReportCard[] = [];
 
   for (const b of budgetStatus(data, month)) {
@@ -43,5 +45,23 @@ export function generateDigest(data: LedgerData, month: string): Digest {
 
   if (cards.length === 0) cards.push({ kind: "allClear" });
 
-  return { month, generatedAt: new Date().toISOString(), cards };
+  return cards;
+}
+
+export async function generateDigest(data: LedgerData, month: string, locale: Locale = "pt"): Promise<Digest> {
+  const ai = await aiDigestCards(data, month, LOCALE_LABELS[locale].long);
+  if (ai && ai.length > 0) {
+    return {
+      month,
+      generatedAt: new Date().toISOString(),
+      cards: ai.map((c): ReportCard => ({ kind: "ai", title: c.title, body: c.body, severity: c.severity })),
+      generatedBy: "ai",
+    };
+  }
+  return {
+    month,
+    generatedAt: new Date().toISOString(),
+    cards: heuristicCards(data, month),
+    generatedBy: "heuristic",
+  };
 }
